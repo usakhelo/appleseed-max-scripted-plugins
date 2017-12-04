@@ -63,6 +63,7 @@
     <ClCompile Include="appleseedinteractive\interactiverenderercontroller.cpp">
       <Filter>appleseedinteractive</Filter>
     </ClCompile>
+    <ClCompile Include="shaderscriptedplugins.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appleseedrenderer\appleseedrenderer.h">
@@ -171,6 +172,7 @@
     <ClInclude Include="appleseedinteractive\interactivesession.h">
       <Filter>appleseedinteractive</Filter>
     </ClInclude>
+    <ClInclude Include="shaderscriptedplugins.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="appleseedrenderer\appleseedrenderer.rc">

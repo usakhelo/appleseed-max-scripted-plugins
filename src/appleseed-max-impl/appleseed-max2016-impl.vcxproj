@@ -86,7 +86,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\3ds Max 2016 SDK\maxsdk\lib\x64\Release;$(SolutionDir)..\..\appleseed\sandbox\lib\v110\$(ConfigurationName);$(SolutionDir)..\..\appleseed-deps\stage\vc11;$(SolutionDir)..\..\boost_1_55_0\stage\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wininet.lib;bmm.lib;core.lib;geom.lib;maxutil.lib;mesh.lib;Paramblk2.lib;ShLwApi.Lib;appleseed.lib;ilmbase-debug\lib\Half.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wininet.lib;bmm.lib;core.lib;geom.lib;maxutil.lib;mesh.lib;Maxscrpt.lib;Paramblk2.lib;ShLwApi.Lib;appleseed.lib;ilmbase-debug\lib\Half.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
@@ -251,6 +251,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClCompile Include="appleseedrenderer\updatechecker.cpp" />
     <ClCompile Include="appleseedsssmtl\appleseedsssmtl.cpp" />
     <ClCompile Include="seexprutils.cpp" />
+    <ClCompile Include="shaderscriptedplugins.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="version.cpp" />
   </ItemGroup>
@@ -293,6 +294,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedsssmtl\resource.h" />
     <ClInclude Include="oslutils.h" />
     <ClInclude Include="seexprutils.h" />
+    <ClInclude Include="shaderscriptedplugins.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>

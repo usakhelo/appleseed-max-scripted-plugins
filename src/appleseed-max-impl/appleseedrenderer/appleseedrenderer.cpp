@@ -36,6 +36,7 @@
 #include "appleseedrenderer/projectbuilder.h"
 #include "appleseedrenderer/renderercontroller.h"
 #include "appleseedrenderer/tilecallback.h"
+#include "shaderscriptedplugins.h"
 #include "utilities.h"
 #include "version.h"
 
@@ -73,7 +74,7 @@ namespace
 }
 
 AppleseedRendererClassDesc g_appleseed_renderer_classdesc;
-
+bool g_shaders_created = false;
 
 //
 // AppleseedRenderer class implementation.
