@@ -6,7 +6,7 @@
 #include "main.h"
 #include "utilities.h"
 #include "version.h"
-#include "shaderscriptedplugins.h"
+#include "oslshaderregistry.h"
 
 namespace asf = foundation;
 namespace asr = renderer;

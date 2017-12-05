@@ -235,7 +235,8 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClCompile Include="appleseedinteractive\interactivesession.cpp" />
     <ClCompile Include="appleseedinteractive\interactivetilecallback.cpp" />
     <ClCompile Include="appleseedobjpropsmod\appleseedobjpropsmod.cpp" />
-    <ClCompile Include="genericosltexture.cpp" />
+    <ClCompile Include="appleseedosltexture\genericosltexture.cpp" />
+    <ClCompile Include="appleseedosltexture\oslshaderregistry.cpp" />
     <ClCompile Include="iappleseedmtl.cpp" />
     <ClCompile Include="appleseedlightmtl\appleseedlightmtl.cpp" />
     <ClCompile Include="logtarget.cpp" />
@@ -252,7 +253,6 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClCompile Include="appleseedrenderer\updatechecker.cpp" />
     <ClCompile Include="appleseedsssmtl\appleseedsssmtl.cpp" />
     <ClCompile Include="seexprutils.cpp" />
-    <ClCompile Include="shaderscriptedplugins.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="version.cpp" />
   </ItemGroup>
@@ -266,6 +266,8 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedinteractive\interactivetilecallback.h" />
     <ClInclude Include="appleseedobjpropsmod\appleseedobjpropsmod.h" />
     <ClInclude Include="appleseedobjpropsmod\resource.h" />
+    <ClInclude Include="appleseedosltexture\genericosltexture.h" />
+    <ClInclude Include="appleseedosltexture\oslshaderregistry.h" />
     <ClInclude Include="bump\bumpparammapdlgproc.h" />
     <ClInclude Include="bump\resource.h" />
     <ClInclude Include="appleseeddisneymtl\appleseeddisneymtl.h" />
@@ -274,7 +276,6 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedglassmtl\appleseedglassmtl.h" />
     <ClInclude Include="appleseedglassmtl\datachunks.h" />
     <ClInclude Include="appleseedglassmtl\resource.h" />
-    <ClInclude Include="genericosltexture.h" />
     <ClInclude Include="iappleseedmtl.h" />
     <ClInclude Include="appleseedlightmtl\appleseedlightmtl.h" />
     <ClInclude Include="appleseedlightmtl\datachunks.h" />
@@ -296,7 +297,6 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedsssmtl\resource.h" />
     <ClInclude Include="oslutils.h" />
     <ClInclude Include="seexprutils.h" />
-    <ClInclude Include="shaderscriptedplugins.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>

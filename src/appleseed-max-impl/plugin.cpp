@@ -32,13 +32,13 @@
 #include "appleseedglassmtl/appleseedglassmtl.h"
 #include "appleseedlightmtl/appleseedlightmtl.h"
 #include "appleseedobjpropsmod/appleseedobjpropsmod.h"
+#include "appleseedosltexture/oslshaderregistry.h"
 #include "appleseedrenderer/appleseedrenderer.h"
 #include "appleseedsssmtl/appleseedsssmtl.h"
 #include "logtarget.h"
 #include "main.h"
 #include "utilities.h"
 #include "version.h"
-#include "shaderscriptedplugins.h"
 
 // appleseed.renderer headers.
 #include "renderer/api/log.h"
@@ -82,7 +82,7 @@ extern "C"
     __declspec(dllexport)
     int LibNumberClasses()
     {
-        return 7;
+        return 9;
     }
 
     __declspec(dllexport)
@@ -104,7 +104,7 @@ extern "C"
 
           default:
             if (i-6 <= osl_class_descriptors.size())
-                return static_cast<ClassDesc2*>(osl_class_descriptors[i - 7].get());
+                return osl_class_descriptors[i - 7];
             return nullptr;
         }
     }

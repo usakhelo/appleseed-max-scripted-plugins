@@ -36,7 +36,6 @@
 #include "appleseedrenderer/projectbuilder.h"
 #include "appleseedrenderer/renderercontroller.h"
 #include "appleseedrenderer/tilecallback.h"
-#include "shaderscriptedplugins.h"
 #include "utilities.h"
 #include "version.h"
 
