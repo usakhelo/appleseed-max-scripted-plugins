@@ -12,4 +12,15 @@ struct ShaderInfo
     wchar_t* m_shader_name;
 };
 
-std::vector<ClassDesc2*> instanciate_shader_plugins();
+class OSLShaderRegistry
+{
+  public:
+    OSLShaderRegistry();
+    
+    ClassDesc2* get_class_descriptor(int index);
+    int get_size();
+    void instanciate_shader_plugins();
+
+  private:
+    std::vector<ClassDesc2*> m_class_descriptors;
+};

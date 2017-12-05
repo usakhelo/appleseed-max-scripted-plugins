@@ -14,11 +14,10 @@ namespace
     ShaderInfo shader_1;
     ShaderInfo shader_2;
 
-    std::vector<ShaderInfo> shaders;
-    std::vector<ClassDesc2*> shader_class_descrpts;
+    std::vector<ShaderInfo*> shaders;
 }
 
-std::vector<ClassDesc2*> instanciate_shader_plugins()
+void OSLShaderRegistry::instanciate_shader_plugins()
 {
     shader_1.m_shader_name = L"shader_1";
     shader_1.m_class_id = Class_ID(0x467936e2, 0x3f6c32f1);
@@ -26,13 +25,13 @@ std::vector<ClassDesc2*> instanciate_shader_plugins()
     shader_2.m_shader_name = L"shader_2";
     shader_2.m_class_id = Class_ID(0x1aaa49a9, 0x7539328e);
 
-    shaders.push_back(shader_1);
-    shaders.push_back(shader_2);
+    shaders.push_back(&shader_1);
+    shaders.push_back(&shader_2);
 
 
     for (auto sh : shaders)
     {
-        auto class_descr = new GenericOSLTextureClassDesc(&sh);
+        auto class_descr = new GenericOSLTextureClassDesc(sh);
 
         auto param_block_descr = new ParamBlockDesc2(
                 // --- Required arguments ---
@@ -54,8 +53,27 @@ std::vector<ClassDesc2*> instanciate_shader_plugins()
             );
 
         class_descr->AddParamBlockDesc(param_block_descr);
-        shader_class_descrpts.push_back(class_descr);
+        m_class_descriptors.push_back(class_descr);
     }
+}
 
-    return shader_class_descrpts;
+OSLShaderRegistry::OSLShaderRegistry()
+{
+    m_class_descriptors.clear();
+    // parse shaders in the directory
+    // create shader_info for each of them
+    // create class descriptor for each of shader_info
+    instanciate_shader_plugins();
+}
+
+ClassDesc2* OSLShaderRegistry::get_class_descriptor(int index)
+{
+    if (index < m_class_descriptors.size())
+        return static_cast<ClassDesc2*>(m_class_descriptors[index]);
+    return nullptr;
+}
+
+int OSLShaderRegistry::get_size()
+{
+    return static_cast<int>(m_class_descriptors.size());
 }

@@ -60,8 +60,6 @@
 // Standard headers.
 #include <sstream>
 #include <string>
-#include <vector>
-#include <memory>
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -69,7 +67,7 @@ namespace asr = renderer;
 namespace
 {
     LogTarget g_log_target;
-    auto osl_class_descriptors = instanciate_shader_plugins();
+    OSLShaderRegistry shader_registry;
 }
 
 extern "C"
@@ -83,13 +81,12 @@ extern "C"
     __declspec(dllexport)
     int LibNumberClasses()
     {
-        return 7 + (int)osl_class_descriptors.size();
+        return 7 + shader_registry.get_size();
     }
 
     __declspec(dllexport)
     ClassDesc2* LibClassDesc(int i)
     {
-
         switch (i)
         {
           case 0: return &g_appleseed_renderer_classdesc;
@@ -103,9 +100,7 @@ extern "C"
           // Make sure to update LibNumberClasses() if you add classes here.
 
           default:
-            if (i-6 <= osl_class_descriptors.size())
-                return osl_class_descriptors[i - 7];
-            return nullptr;
+            return shader_registry.get_class_descriptor(i - 7);
         }
     }
 
