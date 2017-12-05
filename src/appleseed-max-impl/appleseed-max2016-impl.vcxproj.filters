@@ -63,7 +63,12 @@
     <ClCompile Include="appleseedinteractive\interactiverenderercontroller.cpp">
       <Filter>appleseedinteractive</Filter>
     </ClCompile>
-    <ClCompile Include="shaderscriptedplugins.cpp" />
+    <ClCompile Include="shaderscriptedplugins.cpp">
+      <Filter>osltexture</Filter>
+    </ClCompile>
+    <ClCompile Include="genericosltexture.cpp">
+      <Filter>osltexture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appleseedrenderer\appleseedrenderer.h">
@@ -172,7 +177,12 @@
     <ClInclude Include="appleseedinteractive\interactivesession.h">
       <Filter>appleseedinteractive</Filter>
     </ClInclude>
-    <ClInclude Include="shaderscriptedplugins.h" />
+    <ClInclude Include="shaderscriptedplugins.h">
+      <Filter>osltexture</Filter>
+    </ClInclude>
+    <ClInclude Include="genericosltexture.h">
+      <Filter>osltexture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="appleseedrenderer\appleseedrenderer.rc">
@@ -227,6 +237,9 @@
     </Filter>
     <Filter Include="appleseedinteractive">
       <UniqueIdentifier>{ee864abd-823b-4815-bd20-52108be5b332}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="osltexture">
+      <UniqueIdentifier>{6b40242e-ae7c-4bbb-9344-57ff07a6487b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

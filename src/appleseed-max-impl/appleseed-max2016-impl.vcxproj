@@ -235,6 +235,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClCompile Include="appleseedinteractive\interactivesession.cpp" />
     <ClCompile Include="appleseedinteractive\interactivetilecallback.cpp" />
     <ClCompile Include="appleseedobjpropsmod\appleseedobjpropsmod.cpp" />
+    <ClCompile Include="genericosltexture.cpp" />
     <ClCompile Include="iappleseedmtl.cpp" />
     <ClCompile Include="appleseedlightmtl\appleseedlightmtl.cpp" />
     <ClCompile Include="logtarget.cpp" />
@@ -273,6 +274,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedglassmtl\appleseedglassmtl.h" />
     <ClInclude Include="appleseedglassmtl\datachunks.h" />
     <ClInclude Include="appleseedglassmtl\resource.h" />
+    <ClInclude Include="genericosltexture.h" />
     <ClInclude Include="iappleseedmtl.h" />
     <ClInclude Include="appleseedlightmtl\appleseedlightmtl.h" />
     <ClInclude Include="appleseedlightmtl\datachunks.h" />

@@ -38,6 +38,7 @@
 #include "main.h"
 #include "utilities.h"
 #include "version.h"
+#include "shaderscriptedplugins.h"
 
 // appleseed.renderer headers.
 #include "renderer/api/log.h"
@@ -59,6 +60,8 @@
 // Standard headers.
 #include <sstream>
 #include <string>
+#include <vector>
+#include <memory>
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -85,6 +88,8 @@ extern "C"
     __declspec(dllexport)
     ClassDesc2* LibClassDesc(int i)
     {
+        auto osl_class_descriptors = registerShaderPlugins();
+
         switch (i)
         {
           case 0: return &g_appleseed_renderer_classdesc;
@@ -98,6 +103,8 @@ extern "C"
           // Make sure to update LibNumberClasses() if you add classes here.
 
           default:
+            if (i-6 <= osl_class_descriptors.size())
+                return static_cast<ClassDesc2*>(osl_class_descriptors[i - 7].get());
             return nullptr;
         }
     }
