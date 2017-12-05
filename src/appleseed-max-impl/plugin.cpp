@@ -69,6 +69,7 @@ namespace asr = renderer;
 namespace
 {
     LogTarget g_log_target;
+    auto osl_class_descriptors = instanciate_shader_plugins();
 }
 
 extern "C"
@@ -82,13 +83,12 @@ extern "C"
     __declspec(dllexport)
     int LibNumberClasses()
     {
-        return 9;
+        return 7 + (int)osl_class_descriptors.size();
     }
 
     __declspec(dllexport)
     ClassDesc2* LibClassDesc(int i)
     {
-        auto osl_class_descriptors = registerShaderPlugins();
 
         switch (i)
         {

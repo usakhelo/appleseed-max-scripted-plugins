@@ -12,4 +12,4 @@ struct ShaderInfo
     wchar_t* m_shader_name;
 };
 
-std::vector<ClassDesc2*> registerShaderPlugins();
+std::vector<ClassDesc2*> instanciate_shader_plugins();

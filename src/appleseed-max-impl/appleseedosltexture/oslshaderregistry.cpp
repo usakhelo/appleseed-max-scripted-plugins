@@ -18,7 +18,7 @@ namespace
     std::vector<ClassDesc2*> shader_class_descrpts;
 }
 
-std::vector<ClassDesc2*> registerShaderPlugins()
+std::vector<ClassDesc2*> instanciate_shader_plugins()
 {
     shader_1.m_shader_name = L"shader_1";
     shader_1.m_class_id = Class_ID(0x467936e2, 0x3f6c32f1);
