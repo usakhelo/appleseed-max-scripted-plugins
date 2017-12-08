@@ -149,6 +149,7 @@ public:
 
 private:
     wchar_t* m_class_name;
+    wchar_t* m_internal_name;
     Class_ID m_class_id;
     GenericOSLTextureBrowserEntryInfo m_browser_entry_info;
 };

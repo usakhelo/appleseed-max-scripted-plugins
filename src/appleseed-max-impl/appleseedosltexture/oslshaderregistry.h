@@ -9,6 +9,7 @@ struct ShaderInfo
 {
     Class_ID m_class_id;
     wchar_t* m_shader_name;
+    wchar_t* m_internal_name;
 };
 
 class OSLShaderRegistry

@@ -332,7 +332,7 @@ Point3 GenericOSLTexture::EvalNormalPerturb(ShadeContext& /*sc*/)
 
 const MCHAR* GenericOSLTextureBrowserEntryInfo::GetEntryName() const
 {
-    return GenericOSLTextureFriendlyClassName;
+    return L"tututu";
 }
 
 const MCHAR* GenericOSLTextureBrowserEntryInfo::GetEntryCategory() const
@@ -351,6 +351,7 @@ Bitmap* GenericOSLTextureBrowserEntryInfo::GetEntryThumbnail() const
 
 GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info)
     : m_class_name(shader_info->m_shader_name)
+    , m_internal_name(shader_info->m_internal_name)
     , m_class_id(shader_info->m_class_id)
 {
     IMtlRender_Compatibility_MtlBase::Init(*this);
@@ -368,7 +369,7 @@ void* GenericOSLTextureClassDesc::Create(BOOL loading)
 
 const MCHAR* GenericOSLTextureClassDesc::ClassName()
 {
-    return GenericOSLTextureFriendlyClassName;
+    return m_class_name;
 }
 
 SClass_ID GenericOSLTextureClassDesc::SuperClassID()
@@ -389,7 +390,7 @@ const MCHAR* GenericOSLTextureClassDesc::Category()
 const MCHAR* GenericOSLTextureClassDesc::InternalName()
 {
     // Parsable name used by MAXScript.
-    return L"GenericOSLTexture";
+    return m_internal_name;
 }
 
 FPInterface* GenericOSLTextureClassDesc::GetInterface(Interface_ID id)

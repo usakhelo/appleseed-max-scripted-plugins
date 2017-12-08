@@ -21,9 +21,11 @@ void OSLShaderRegistry::instanciate_shader_plugins()
 {
     shader_1.m_shader_name = L"shader_1";
     shader_1.m_class_id = Class_ID(0x467936e2, 0x3f6c32f1);
+    shader_1.m_internal_name = L"OSL_Noise";
 
     shader_2.m_shader_name = L"shader_2";
     shader_2.m_class_id = Class_ID(0x1aaa49a9, 0x7539328e);
+    shader_2.m_internal_name = L"OSL_Ramp";
 
     m_shaders.push_back(shader_1);
     m_shaders.push_back(shader_2);
@@ -39,11 +41,12 @@ void OSLShaderRegistry::instanciate_shader_plugins()
                 L"oslTextureMapParams",                     // internal parameter block's name
                 0,                                          // ID of the localized name string
                 class_descr.Get(),                          // class descriptor
-                P_AUTO_CONSTRUCT,                           // block flags
+                P_AUTO_CONSTRUCT, // + P_AUTO_UI,                           // block flags
 
                                                             // --- P_AUTO_CONSTRUCT arguments ---
                 0,                                          // parameter block's reference number
 
+                //IDD_PANEL, IDS_PARAMS, 0, 0, NULL,
                 //0,                   /* Parameter ID. We are defining the first parameter here */
                 //L"p0",              /* Internal name of the parameter */
                 //TYPE_FLOAT,          /* Parameter Type. It will be a float parameter */
