@@ -11,10 +11,10 @@
 
 namespace
 {
+
+
     ShaderInfo shader_1;
     ShaderInfo shader_2;
-
-    std::vector<ShaderInfo*> shaders;
 }
 
 void OSLShaderRegistry::instanciate_shader_plugins()
@@ -25,41 +25,58 @@ void OSLShaderRegistry::instanciate_shader_plugins()
     shader_2.m_shader_name = L"shader_2";
     shader_2.m_class_id = Class_ID(0x1aaa49a9, 0x7539328e);
 
-    shaders.push_back(&shader_1);
-    shaders.push_back(&shader_2);
+    m_shaders.push_back(shader_1);
+    m_shaders.push_back(shader_2);
 
 
-    for (auto sh : shaders)
+    for (auto sh : m_shaders)
     {
-        auto class_descr = new GenericOSLTextureClassDesc(sh);
-
-        auto param_block_descr = new ParamBlockDesc2(
+        MaxSDK::AutoPtr<ClassDesc2> class_descr(new GenericOSLTextureClassDesc(&sh));
+        MaxSDK::AutoPtr<ParamBlockDesc2> param_block_descr(new ParamBlockDesc2(
+        //auto param_block_descr = new ParamBlockDesc2(
                 // --- Required arguments ---
                 0,                                          // parameter block's ID
                 L"oslTextureMapParams",                     // internal parameter block's name
                 0,                                          // ID of the localized name string
-                class_descr,                                // class descriptor
+                class_descr.Get(),                          // class descriptor
                 P_AUTO_CONSTRUCT,                           // block flags
 
                                                             // --- P_AUTO_CONSTRUCT arguments ---
                 0,                                          // parameter block's reference number
 
-                //0,                   // Parameter ID. We are defining the first parameter here
-                //_T("p0"),            // Internal name of the parameter
-                //TYPE_FLOAT,          // Parameter Type. It will be a float parameter
-                //P_ANIMATABLE,        // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+                //0,                   /* Parameter ID. We are defining the first parameter here */
+                //L"p0",              /* Internal name of the parameter */
+                //TYPE_FLOAT,          /* Parameter Type. It will be a float parameter */
+                //P_ANIMATABLE,        /* A constant defined in iparamb2.h. Indicates that the parameter is animatable.*/
+                //p_end,               /* End of the first parameter definition.*/
+                //1,                   /* Parameter ID. This will be the second parameter*/
+                //L"p1",                  /* Internal name of the parameter*/
+                //TYPE_FLOAT,          /* Parameter Type. It will be a float parameter*/
+                //P_ANIMATABLE,        /* A constant defined in iparamb2.h. Indicates that the parameter is animatable.*/
+                //p_end,               /* End of the second parameter definition. 'end' is an enumerated value defined in
+                                     /* the 'ParamTags' enumerator.*/
 
             p_end
-            );
+            ));
 
-        class_descr->AddParamBlockDesc(param_block_descr);
-        m_class_descriptors.push_back(class_descr);
+        //param_block_descr->SetClassDesc(class_descr.Get());
+        param_block_descr->AddParam(
+            0,                   /* Parameter ID. We are defining the first parameter here */
+            _M("p0"),              /* Internal name of the parameter */
+            TYPE_FLOAT,          /* Parameter Type. It will be a float parameter */
+            P_ANIMATABLE,        /* A constant defined in iparamb2.h. Indicates that the parameter is animatable.*/
+            0,                  //string table id, e.g. IDS_BASE_COLOR
+            p_end               /* End of the first parameter definition.*/
+        );
+        m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));
+        m_class_descriptors.push_back(MaxSDK::AutoPtr<ClassDesc2>(class_descr));
     }
 }
 
 OSLShaderRegistry::OSLShaderRegistry()
 {
     m_class_descriptors.clear();
+    m_shaders.clear();
     // parse shaders in the directory
     // create shader_info for each of them
     // create class descriptor for each of shader_info
@@ -69,7 +86,7 @@ OSLShaderRegistry::OSLShaderRegistry()
 ClassDesc2* OSLShaderRegistry::get_class_descriptor(int index)
 {
     if (index < m_class_descriptors.size())
-        return static_cast<ClassDesc2*>(m_class_descriptors[index]);
+        return m_class_descriptors[index].Get();
     return nullptr;
 }
 

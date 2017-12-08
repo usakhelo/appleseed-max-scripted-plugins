@@ -4,7 +4,6 @@
 #include <iparamb2.h>
 
 #include <vector>
-#include <memory>
 
 struct ShaderInfo
 {
@@ -22,5 +21,7 @@ class OSLShaderRegistry
     void instanciate_shader_plugins();
 
   private:
-    std::vector<ClassDesc2*> m_class_descriptors;
+    std::vector<ShaderInfo> m_shaders;
+    std::vector<MaxSDK::AutoPtr<ClassDesc2>> m_class_descriptors;
+    std::vector<MaxSDK::AutoPtr<ParamBlockDesc2>> m_paramblock_descriptors;
 };
