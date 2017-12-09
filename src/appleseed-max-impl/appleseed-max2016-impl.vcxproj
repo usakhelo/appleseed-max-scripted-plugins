@@ -268,6 +268,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedobjpropsmod\resource.h" />
     <ClInclude Include="appleseedosltexture\genericosltexture.h" />
     <ClInclude Include="appleseedosltexture\oslshaderregistry.h" />
+    <ClInclude Include="appleseedosltexture\resource.h" />
     <ClInclude Include="bump\bumpparammapdlgproc.h" />
     <ClInclude Include="bump\resource.h" />
     <ClInclude Include="appleseeddisneymtl\appleseeddisneymtl.h" />
@@ -296,6 +297,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedsssmtl\datachunks.h" />
     <ClInclude Include="appleseedsssmtl\resource.h" />
     <ClInclude Include="oslutils.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="seexprutils.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="version.h" />
@@ -303,6 +305,7 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
   <ItemGroup>
     <ResourceCompile Include="appleseedenvmap\appleseedenvmap.rc" />
     <ResourceCompile Include="appleseedobjpropsmod\appleseedobjpropsmod.rc" />
+    <ResourceCompile Include="appleseedosltexture\resource.rc" />
     <ResourceCompile Include="bump\bump.rc" />
     <ResourceCompile Include="appleseeddisneymtl\appleseeddisneymtl.rc" />
     <ResourceCompile Include="appleseedglassmtl\appleseedglassmtl.rc" />

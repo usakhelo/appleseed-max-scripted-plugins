@@ -183,6 +183,10 @@
     <ClInclude Include="appleseedosltexture\oslshaderregistry.h">
       <Filter>appleseedosltexture</Filter>
     </ClInclude>
+    <ClInclude Include="appleseedosltexture\resource.h">
+      <Filter>appleseedosltexture</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="appleseedrenderer\appleseedrenderer.rc">
@@ -208,6 +212,9 @@
     </ResourceCompile>
     <ResourceCompile Include="appleseedenvmap\appleseedenvmap.rc">
       <Filter>appleseedenvmap</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="appleseedosltexture\resource.rc">
+      <Filter>appleseedosltexture</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
