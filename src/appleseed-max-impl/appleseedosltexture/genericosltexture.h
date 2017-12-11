@@ -100,13 +100,14 @@ public:
     virtual RGBA EvalColor(ShadeContext& sc) override;
     virtual Point3 EvalNormalPerturb(ShadeContext& sc) override;
 
+    IParamBlock2*   m_pblock;          // ref 0
+
 protected:
     virtual void SetReference(int i, RefTargetHandle rtarg) override;
 
 private:
     Class_ID        m_classid;
     ClassDesc2*     m_class_desc;
-    IParamBlock2*   m_pblock;          // ref 0
     Interval        m_params_validity;
 };
 

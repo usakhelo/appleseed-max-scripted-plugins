@@ -12,6 +12,16 @@ struct ShaderInfo
     wchar_t* m_internal_name;
 };
 
+class DlgTemplateGenerator
+{
+  public:
+    DWORD* generate_template(IParamBlock2* pblock);
+    void release_template();
+
+  private:
+    DWORD* buf;
+};
+
 class OSLShaderRegistry
 {
   public:

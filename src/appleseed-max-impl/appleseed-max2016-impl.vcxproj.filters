@@ -186,7 +186,9 @@
     <ClInclude Include="appleseedosltexture\resource.h">
       <Filter>appleseedosltexture</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="appleseedosltexture\templategenerator.h">
+      <Filter>appleseedosltexture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="appleseedrenderer\appleseedrenderer.rc">
@@ -213,7 +215,7 @@
     <ResourceCompile Include="appleseedenvmap\appleseedenvmap.rc">
       <Filter>appleseedenvmap</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="appleseedosltexture\resource.rc">
+    <ResourceCompile Include="appleseedosltexture\genericosltexture.rc">
       <Filter>appleseedosltexture</Filter>
     </ResourceCompile>
   </ItemGroup>

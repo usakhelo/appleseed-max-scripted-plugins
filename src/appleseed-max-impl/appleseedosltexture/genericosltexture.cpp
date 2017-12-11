@@ -3,11 +3,15 @@
 
 // appleseed-max headers.
 #include "appleseedrenderer/appleseedrenderer.h"
+#include "resource.h"
 #include "main.h"
 #include "utilities.h"
 #include "version.h"
 #include "oslshaderregistry.h"
+#include "templategenerator.h"
 
+#include "maxscript\maxscript.h"
+#include "maxscript\util\listener.h"
 namespace asf = foundation;
 namespace asr = renderer;
 
@@ -23,6 +27,87 @@ const USHORT ChunkMtlBase = 0x1000;
 namespace
 {
     const wchar_t* GenericOSLTextureFriendlyClassName = L"appleseed osl texture";
+}
+
+
+namespace
+{
+    class OSLTextureParamDlg : public ParamDlg 
+    {
+        Class_ID classID;
+      public:
+        GenericOSLTexture* texture;
+        HWND  	hmedit;
+        IMtlParams* ip;
+        IParamMap2* pmap;
+
+        OSLTextureParamDlg(HWND hwMtlEdit, IMtlParams* imp, GenericOSLTexture* map)
+        {
+            texture = map;
+            ip = imp;
+
+            classID = texture->ClassID();
+
+            TCHAR name[512];
+            ParamBlockDesc2 *pb_desc = texture->m_pblock->GetDesc();
+            if (pb_desc && pb_desc->int_name) {
+                _tcsncpy(name, pb_desc->int_name, 511);
+                name[511] = '\0';
+            }
+            //else vutils_strcpy(name, _T("Parameters"));
+            texture->m_pblock->ReleaseDesc();
+
+            //DLGTEMPLATE* dlg_template = templateGenerator.GenerateTemplate(texture->m_pblock, name, 217);
+            HRSRC hrsrc = ::FindResource(g_module, MAKEINTRESOURCE(IDD_OSLTEXTURE_PARAMS), RT_DIALOG);
+            HGLOBAL dlg_res = LoadResource(g_module, hrsrc);
+            DWORD sz = ::SizeofResource(g_module, hrsrc);
+            auto dlg_tmplt = static_cast<DLGTEMPLATE*>(dlg_res);
+            char *buf = (char*)dlg_res;
+            FILE *fp = fopen("C:\\Users\\sergo\\Desktop\\dlg_template.dat", "wb");
+            if (fp != NULL)
+            {
+                fwrite(buf, sizeof(DWORD), sz, fp);
+            }
+            fclose(fp);
+            //auto dlg_template2 = static_cast<DLGTEMPLATE*>(LockResource(dlg_res));
+            //wchar_t* dlg_template_t = MAKEINTRESOURCE(IDD_OSLTEXTURE_PARAMS);
+            LONG baseunitX = GetDialogBaseUnits();
+            int width = MulDiv(217, 4, 7);
+            int height = MulDiv(40, 8, baseunitX);
+            DialogTemplate dialogTemplate((LPCSTR)L"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 170, 80, (LPCSTR)L"MS Sans Serif", 8);
+            //auto res = DialogBoxIndirect(g_module, dialogTemplate, NULL, NULL);
+            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, name, 0);
+            //pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hmedit, nullptr, nullptr, static_cast<DLGTEMPLATE*>(dlg_res), name, 0);
+            //templateGenerator.ReleaseDlgTemplate(dlg_template);
+        }
+
+        Class_ID ClassID() override
+        { 
+            return classID;
+        }
+
+        ReferenceTarget* GetThing() override
+        { 
+            return texture;
+        }
+
+        void SetThing(ReferenceTarget *m) override
+        {
+            assert(m->ClassID() == texture->ClassID());
+            texture = static_cast<GenericOSLTexture*>(m);
+            pmap->SetParamBlock(texture->m_pblock);
+        }
+
+        void DeleteThis() override
+        {
+            if (pmap) DestroyMParamMap2(pmap);
+            pmap = NULL;
+            delete this;
+        }
+        void SetTime(TimeValue t) {}
+        void ReloadDialog(void) {}
+        void ActivateDlg(BOOL onOff) {}
+    };
 }
 
 //
@@ -258,8 +343,9 @@ namespace
 
 ParamDlg* GenericOSLTexture::CreateParamDlg(HWND hwMtlEdit, IMtlParams* imp)
 {
-    IAutoMParamDlg* master_dlg = m_class_desc->CreateParamDlgs(hwMtlEdit, imp, this);
-    m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
+    //IAutoMParamDlg* master_dlg = m_class_desc->CreateParamDlgs(hwMtlEdit, imp, this);
+    ParamDlg* master_dlg = new OSLTextureParamDlg(hwMtlEdit, imp, this);
+    //m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
     return master_dlg;
 }
 
