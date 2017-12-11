@@ -58,27 +58,13 @@ namespace
             texture->m_pblock->ReleaseDesc();
 
             //DLGTEMPLATE* dlg_template = templateGenerator.GenerateTemplate(texture->m_pblock, name, 217);
-            HRSRC hrsrc = ::FindResource(g_module, MAKEINTRESOURCE(IDD_OSLTEXTURE_PARAMS), RT_DIALOG);
-            HGLOBAL dlg_res = LoadResource(g_module, hrsrc);
-            DWORD sz = ::SizeofResource(g_module, hrsrc);
-            auto dlg_tmplt = static_cast<DLGTEMPLATE*>(dlg_res);
-            char *buf = (char*)dlg_res;
-            FILE *fp = fopen("C:\\Users\\sergo\\Desktop\\dlg_template.dat", "wb");
-            if (fp != NULL)
-            {
-                fwrite(buf, sizeof(DWORD), sz, fp);
-            }
-            fclose(fp);
-            //auto dlg_template2 = static_cast<DLGTEMPLATE*>(LockResource(dlg_res));
-            //wchar_t* dlg_template_t = MAKEINTRESOURCE(IDD_OSLTEXTURE_PARAMS);
             LONG baseunitX = GetDialogBaseUnits();
             int width = MulDiv(217, 4, 7);
             int height = MulDiv(40, 8, baseunitX);
             DialogTemplate dialogTemplate((LPCSTR)L"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 170, 80, (LPCSTR)L"MS Sans Serif", 8);
-            //auto res = DialogBoxIndirect(g_module, dialogTemplate, NULL, NULL);
+            dialogTemplate.AddStatic((LPCSTR)L"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
+            //dialogTemplate.AddComponent((LPCSTR)L"ColorSwatch", (LPCSTR)L"Color Swatch", WS_TABSTOP, NULL, 85, 5, 30, 10, 7701);
             pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, name, 0);
-            //pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hmedit, nullptr, nullptr, static_cast<DLGTEMPLATE*>(dlg_res), name, 0);
-            //templateGenerator.ReleaseDlgTemplate(dlg_template);
         }
 
         Class_ID ClassID() override
