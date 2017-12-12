@@ -58,13 +58,14 @@ namespace
             texture->m_pblock->ReleaseDesc();
 
             //DLGTEMPLATE* dlg_template = templateGenerator.GenerateTemplate(texture->m_pblock, name, 217);
-            LONG baseunitX = GetDialogBaseUnits();
-            int width = MulDiv(217, 4, 7);
-            int height = MulDiv(40, 8, baseunitX);
-            DialogTemplate dialogTemplate((LPCSTR)L"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 170, 80, (LPCSTR)L"MS Sans Serif", 8);
-            dialogTemplate.AddStatic((LPCSTR)L"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
-            //dialogTemplate.AddComponent((LPCSTR)L"ColorSwatch", (LPCSTR)L"Color Swatch", WS_TABSTOP, NULL, 85, 5, 30, 10, 7701);
-            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, name, 0);
+            DialogTemplate dialogTemplate((LPCSTR)"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
+            dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
+            dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 7701);
+            dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 7703);
+            dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
+
+            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"ColorSwatch", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
+            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, name, 0);
         }
 
         Class_ID ClassID() override

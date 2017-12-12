@@ -62,6 +62,8 @@ public:
 
         item.dwExtendedStyle = exStyle;
 
+        AlignData(sizeof(DWORD));
+
         AppendData(&item, sizeof(DLGITEMTEMPLATE));
 
         AppendString(type);
