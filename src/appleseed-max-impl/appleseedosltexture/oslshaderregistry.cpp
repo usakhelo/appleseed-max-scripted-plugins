@@ -2,7 +2,6 @@
 #include "oslshaderregistry.h"
 
 #include "genericosltexture.h"
-#include "resource.h"
 
 #include <iparamb2.h>
 #include <maxtypes.h>
@@ -58,8 +57,8 @@ void OSLShaderRegistry::instanciate_shader_plugins()
             L"p0",                  // Internal name of the parameter
             TYPE_RGBA,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            0,                      // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, IDC_SWATCH_COLOR_1,
+            19780,                  // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_COLORSWATCH, 7701,
             p_end                   // End of the first parameter definition
         );
         param_block_descr->AddParam(
@@ -67,8 +66,8 @@ void OSLShaderRegistry::instanciate_shader_plugins()
             L"p1",                  // Internal name of the parameter
             TYPE_FLOAT,             // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            0,                      //string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, IDC_EDIT_1, IDC_SPIN_1, 10.0f,
+            19781,                  //string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
             p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
         );
         m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));

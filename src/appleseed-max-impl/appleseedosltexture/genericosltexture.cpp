@@ -3,7 +3,6 @@
 
 // appleseed-max headers.
 #include "appleseedrenderer/appleseedrenderer.h"
-#include "resource.h"
 #include "main.h"
 #include "utilities.h"
 #include "version.h"
@@ -65,7 +64,7 @@ namespace
             dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
 
             //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"ColorSwatch", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
-            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, name, 0);
+            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
         }
 
         Class_ID ClassID() override
@@ -477,6 +476,16 @@ FPInterface* GenericOSLTextureClassDesc::GetInterface(Interface_ID id)
 HINSTANCE GenericOSLTextureClassDesc::HInstance()
 {
     return g_module;
+}
+
+const MCHAR* GenericOSLTextureClassDesc::GetRsrcString(INT_PTR id)
+{
+    if (id == 19780)
+        return L"Color Param";
+    else if (id == 19781)
+        return L"Float Param";
+    else
+        return ClassDesc2::GetRsrcString(id);
 }
 
 bool GenericOSLTextureClassDesc::IsCompatibleWithRenderer(ClassDesc& renderer_class_desc)

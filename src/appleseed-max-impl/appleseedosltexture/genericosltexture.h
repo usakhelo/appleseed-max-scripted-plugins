@@ -145,6 +145,8 @@ public:
     virtual FPInterface* GetInterface(Interface_ID id) override;
     virtual HINSTANCE HInstance() override;
 
+    virtual const MCHAR* GetRsrcString(INT_PTR id) override;
+
     // IMtlRender_Compatibility_MtlBase methods.
     virtual bool IsCompatibleWithRenderer(ClassDesc& renderer_class_desc) override;
 

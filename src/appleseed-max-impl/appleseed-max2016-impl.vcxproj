@@ -268,7 +268,6 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
     <ClInclude Include="appleseedobjpropsmod\resource.h" />
     <ClInclude Include="appleseedosltexture\genericosltexture.h" />
     <ClInclude Include="appleseedosltexture\oslshaderregistry.h" />
-    <ClInclude Include="appleseedosltexture\resource.h" />
     <ClInclude Include="appleseedosltexture\templategenerator.h" />
     <ClInclude Include="bump\bumpparammapdlgproc.h" />
     <ClInclude Include="bump\resource.h" />
@@ -305,7 +304,6 @@ copy /Y "$(SolutionDir)..\..\appleseed\sandbox\shaders\max\*.oso" "$(SolutionDir
   <ItemGroup>
     <ResourceCompile Include="appleseedenvmap\appleseedenvmap.rc" />
     <ResourceCompile Include="appleseedobjpropsmod\appleseedobjpropsmod.rc" />
-    <ResourceCompile Include="appleseedosltexture\genericosltexture.rc" />
     <ResourceCompile Include="bump\bump.rc" />
     <ResourceCompile Include="appleseeddisneymtl\appleseeddisneymtl.rc" />
     <ResourceCompile Include="appleseedglassmtl\appleseedglassmtl.rc" />
