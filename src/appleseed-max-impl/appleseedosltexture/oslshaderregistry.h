@@ -5,12 +5,33 @@
 
 #include <vector>
 
+enum ShaderParamType
+{
+    Float,
+    Int,
+    Color,
+    ColorAlpha,
+    TextureColor,
+    Point,
+    String
+};
+
 struct ShaderInfo
 {
-    Class_ID m_class_id;
-    wchar_t* m_shader_name;
-    wchar_t* m_internal_name;
+    Class_ID    m_class_id;
+    wchar_t*    m_shader_name;
+    wchar_t*    m_internal_name;
 };
+
+struct ShaderParamInfo
+{
+    wchar_t*    m_param_name;
+    ShaderParamType   m_param_type;
+    int         m_pid;
+    int         m_str_id;
+    int         m_ui_id;
+};
+
 
 class DlgTemplateGenerator
 {

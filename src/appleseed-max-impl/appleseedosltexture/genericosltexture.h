@@ -134,7 +134,7 @@ class GenericOSLTextureClassDesc
     , public IMtlRender_Compatibility_MtlBase
 {
 public:
-    GenericOSLTextureClassDesc(ShaderInfo* shader_info);
+    explicit GenericOSLTextureClassDesc(ShaderInfo* shader_info);
     virtual int IsPublic() override;
     virtual void* Create(BOOL loading) override;
     virtual const wchar_t* ClassName() override;
@@ -150,9 +150,16 @@ public:
     // IMtlRender_Compatibility_MtlBase methods.
     virtual bool IsCompatibleWithRenderer(ClassDesc& renderer_class_desc) override;
 
+    void create_parameter_block_desc();
+
 private:
-    wchar_t* m_class_name;
-    wchar_t* m_internal_name;
-    Class_ID m_class_id;
-    GenericOSLTextureBrowserEntryInfo m_browser_entry_info;
+    void add_parameter(ParamBlockDesc2* pb_desc, const ShaderParamInfo& param_info);
+
+    wchar_t*                            m_class_name;
+    wchar_t*                            m_internal_name;
+    Class_ID                            m_class_id;
+    GenericOSLTextureBrowserEntryInfo   m_browser_entry_info;
+
+    ShaderInfo*                         m_shader_info;
+    MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
 };

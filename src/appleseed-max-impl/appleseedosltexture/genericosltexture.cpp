@@ -33,63 +33,53 @@ namespace
 {
     class OSLTextureParamDlg : public ParamDlg 
     {
-        Class_ID classID;
+        Class_ID m_class_id;
+
       public:
-        GenericOSLTexture* texture;
+        GenericOSLTexture* m_texture;
         HWND  	hmedit;
-        IMtlParams* ip;
-        IParamMap2* pmap;
+        IMtlParams* m_imp;
+        IParamMap2* m_pmap;
 
         OSLTextureParamDlg(HWND hwMtlEdit, IMtlParams* imp, GenericOSLTexture* map)
+            : m_texture(map)
+            , m_imp(imp)
         {
-            texture = map;
-            ip = imp;
+            m_class_id = m_texture->ClassID();
 
-            classID = texture->ClassID();
-
-            TCHAR name[512];
-            ParamBlockDesc2 *pb_desc = texture->m_pblock->GetDesc();
-            if (pb_desc && pb_desc->int_name) {
-                _tcsncpy(name, pb_desc->int_name, 511);
-                name[511] = '\0';
-            }
-            //else vutils_strcpy(name, _T("Parameters"));
-            texture->m_pblock->ReleaseDesc();
-
-            //DLGTEMPLATE* dlg_template = templateGenerator.GenerateTemplate(texture->m_pblock, name, 217);
             DialogTemplate dialogTemplate((LPCSTR)"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
             dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
             dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 7701);
             dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 7703);
             dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
 
-            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"ColorSwatch", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
-            pmap = CreateMParamMap2(texture->m_pblock, ip, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
+            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
         }
 
         Class_ID ClassID() override
         { 
-            return classID;
+            return m_class_id;
         }
 
         ReferenceTarget* GetThing() override
         { 
-            return texture;
+            return m_texture;
         }
 
         void SetThing(ReferenceTarget *m) override
         {
-            assert(m->ClassID() == texture->ClassID());
-            texture = static_cast<GenericOSLTexture*>(m);
-            pmap->SetParamBlock(texture->m_pblock);
+            assert(m->ClassID() == m_texture->ClassID());
+            m_texture = static_cast<GenericOSLTexture*>(m);
+            m_pmap->SetParamBlock(m_texture->m_pblock);
         }
 
         void DeleteThis() override
         {
-            if (pmap) DestroyMParamMap2(pmap);
-            pmap = NULL;
+            if (m_pmap) DestroyMParamMap2(m_pmap);
+            m_pmap = NULL;
             delete this;
         }
+
         void SetTime(TimeValue t) {}
         void ReloadDialog(void) {}
         void ActivateDlg(BOOL onOff) {}
@@ -329,7 +319,6 @@ namespace
 
 ParamDlg* GenericOSLTexture::CreateParamDlg(HWND hwMtlEdit, IMtlParams* imp)
 {
-    //IAutoMParamDlg* master_dlg = m_class_desc->CreateParamDlgs(hwMtlEdit, imp, this);
     ParamDlg* master_dlg = new OSLTextureParamDlg(hwMtlEdit, imp, this);
     //m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
     return master_dlg;
@@ -425,8 +414,11 @@ GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info)
     : m_class_name(shader_info->m_shader_name)
     , m_internal_name(shader_info->m_internal_name)
     , m_class_id(shader_info->m_class_id)
+    , m_shader_info(shader_info)
 {
     IMtlRender_Compatibility_MtlBase::Init(*this);
+
+    create_parameter_block_desc();
 }
 
 int GenericOSLTextureClassDesc::IsPublic()
@@ -492,4 +484,142 @@ bool GenericOSLTextureClassDesc::IsCompatibleWithRenderer(ClassDesc& renderer_cl
 {
     // Before 3ds Max 2017, Class_ID::operator==() returned an int.
     return renderer_class_desc.ClassID() == AppleseedRenderer::get_class_id() ? true : false;
+}
+
+void GenericOSLTextureClassDesc::create_parameter_block_desc()
+{
+    m_param_block_desc.Reset(new ParamBlockDesc2(
+        // --- Required arguments ---
+        0,                                          // parameter block's ID
+        L"oslTextureMapParams",                     // internal parameter block's name
+        0,                                          // ID of the localized name string
+        this,                                       // class descriptor
+        P_AUTO_CONSTRUCT,                           // block flags
+
+                                                    // --- P_AUTO_CONSTRUCT arguments ---
+        0,                                          // parameter block's reference number
+        p_end
+    ));
+
+    ShaderParamInfo sh_params;
+    sh_params.m_param_name = L"p0";
+    sh_params.m_param_type = ShaderParamType::Color;
+    sh_params.m_pid = 0;
+    sh_params.m_str_id = 19780;
+    sh_params.m_ui_id = 7701;
+
+    add_parameter(m_param_block_desc.Get(), sh_params)
+    m_param_block_desc->AddParam(
+        0,                      // Parameter ID. We are defining the first parameter here
+        L"p0",                  // Internal name of the parameter
+        TYPE_RGBA,              // Parameter Type. It will be a float parameter
+        P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+        19780,                  // string table id, e.g. IDS_BASE_COLOR
+        p_ui, TYPE_COLORSWATCH, 7701,
+        p_end                   // End of the first parameter definition
+    );
+    m_param_block_desc->AddParam(
+        1,                      // Parameter ID. This will be the second parameter
+        L"p1",                  // Internal name of the parameter
+        TYPE_FLOAT,             // Parameter Type. It will be a float parameter
+        P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+        19781,                  //string table id, e.g. IDS_BASE_COLOR
+        p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
+        p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
+    );
+
+    
+}
+
+void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, const ShaderParamInfo& param_info)
+{
+    /*supports following controls
+
+    TYPE_SPINNER,
+    TYPE_RADIO,
+    TYPE_SINGLECHEKBOX,
+    TYPE_COLORSWATCH,
+    TYPE_EDITBOX
+    TYPE_CHECKBUTTON,
+    TYPE_TEXMAPBUTTON,
+    TYPE_MTLBUTTON,
+    TYPE_SLIDER,
+    TYPE_COLORSWATCH_FRGBA,
+    TYPE_INT_COMBOBOX,
+    */
+
+    switch (param_info.m_param_type)
+    {
+    case Float:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_FLOAT,             // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
+            p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
+        );
+    case Int:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_INT,             // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10,
+            p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
+        );
+    case Color:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_RGBA,              // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_COLORSWATCH, 7701,
+            p_end                   // End of the first parameter definition
+        );
+    case ColorAlpha:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_RGBA,              // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_COLORSWATCH, 7701,
+            p_end                   // End of the first parameter definition
+        );
+    case TextureColor:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_TEXMAP,              // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_TEXMAPBUTTON, 7701,
+            p_end                   // End of the first parameter definition
+        );
+    case Point:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_POINT3,              // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_COLORSWATCH, 7701,
+            p_end                   // End of the first parameter definition
+        );
+    case String:
+        pb_desc->AddParam(
+            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
+            param_info.m_param_name,// Internal name of the parameter
+            TYPE_RGBA,              // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_COLORSWATCH, 7701,
+            p_end                   // End of the first parameter definition
+        );
+    }
+    
 }

@@ -38,39 +38,7 @@ void OSLShaderRegistry::instanciate_shader_plugins()
     for (auto sh : m_shaders)
     {
         MaxSDK::AutoPtr<ClassDesc2> class_descr(new GenericOSLTextureClassDesc(&sh));
-        MaxSDK::AutoPtr<ParamBlockDesc2> param_block_descr(new ParamBlockDesc2(
-        //auto param_block_descr = new ParamBlockDesc2(
-                // --- Required arguments ---
-                0,                                          // parameter block's ID
-                L"oslTextureMapParams",                     // internal parameter block's name
-                0,                                          // ID of the localized name string
-                class_descr.Get(),                          // class descriptor
-                P_AUTO_CONSTRUCT,                           // block flags
 
-                                                            // --- P_AUTO_CONSTRUCT arguments ---
-                0,                                          // parameter block's reference number
-            p_end
-            ));
-
-        param_block_descr->AddParam(
-            0,                      // Parameter ID. We are defining the first parameter here
-            L"p0",                  // Internal name of the parameter
-            TYPE_RGBA,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            19780,                  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, 7701,
-            p_end                   // End of the first parameter definition
-        );
-        param_block_descr->AddParam(
-            1,                      // Parameter ID. This will be the second parameter
-            L"p1",                  // Internal name of the parameter
-            TYPE_FLOAT,             // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            19781,                  //string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
-            p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
-        );
-        m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));
         m_class_descriptors.push_back(MaxSDK::AutoPtr<ClassDesc2>(class_descr));
     }
 }
