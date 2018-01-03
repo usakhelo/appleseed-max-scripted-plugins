@@ -4,10 +4,9 @@
 // appleseed-max headers.
 #include "appleseedrenderer/appleseedrenderer.h"
 #include "main.h"
+#include "templategenerator.h"
 #include "utilities.h"
 #include "version.h"
-#include "oslshaderregistry.h"
-#include "templategenerator.h"
 
 #include "maxscript\maxscript.h"
 #include "maxscript\util\listener.h"
@@ -26,6 +25,13 @@ const USHORT ChunkMtlBase = 0x1000;
 namespace
 {
     const wchar_t* GenericOSLTextureFriendlyClassName = L"appleseed osl texture";
+
+    int res_id = 100;
+
+    int get_res_id()
+    {
+        return res_id++;
+    }
 }
 
 
@@ -325,7 +331,7 @@ namespace
 
 ParamDlg* GenericOSLTexture::CreateParamDlg(HWND hwMtlEdit, IMtlParams* imp)
 {
-    ParamDlg* master_dlg = new OSLTextureParamDlg(hwMtlEdit, imp, this);
+    ParamDlg* master_dlg = nullptr; // new OSLTextureParamDlg(hwMtlEdit, imp, this);
     //m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
     return master_dlg;
 }
@@ -478,10 +484,10 @@ HINSTANCE GenericOSLTextureClassDesc::HInstance()
 
 const MCHAR* GenericOSLTextureClassDesc::GetRsrcString(INT_PTR id)
 {
-    if (id == 19780)
-        return L"Color Param";
-    else if (id == 19781)
-        return L"Float Param";
+    const auto it = m_label_map.find(static_cast<int>(id));
+
+    if (it != m_label_map.end())
+        return it->second->m_label_str;
     else
         return ClassDesc2::GetRsrcString(id);
 }
@@ -507,10 +513,9 @@ void GenericOSLTextureClassDesc::create_parameter_block_desc()
         p_end
     ));
     
-    for (auto& param_info : m_shader_info->m_params)
+    for (auto param_info : m_shader_info->m_params)
     {
         add_parameter(m_param_block_desc.Get(), param_info);
-
     }
     /*
     m_param_block_desc->AddParam(
@@ -534,7 +539,7 @@ void GenericOSLTextureClassDesc::create_parameter_block_desc()
     */
 }
 
-void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, const ShaderParamInfo& param_info)
+void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info)
 {
     /*supports following controls
 
@@ -551,85 +556,93 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, const S
     TYPE_INT_COMBOBOX,
     */
 
-    switch (param_info.m_param_type)
+    param_info->m_label_res_id = get_res_id();
+    m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
+    int first_ctrl_res_id = get_res_id();
+    m_ctrl_id_map.insert(std::make_pair(first_ctrl_res_id, param_info));
+
+    switch (param_info->m_param_type)
     {
-    case ShaderInfo::ShaderParamType::Float:
+      case ShaderInfo::ParamType::Float:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_FLOAT,             // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, SPIN_AUTOSCALE,
-            p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
+            param_info->m_pid,           // Parameter ID. We are defining the first parameter here
+            param_info->m_param_name,    // Internal name of the parameter
+            TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, first_ctrl_res_id, get_res_id(), SPIN_AUTOSCALE,
+            p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
         );
         break;
-    case ShaderInfo::ShaderParamType::Int:
+      case ShaderInfo::ParamType::Int:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_INT,             // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, SPIN_AUTOSCALE,
-            p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_INT,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, first_ctrl_res_id, get_res_id(), SPIN_AUTOSCALE,
+            p_end
         );
         break;
-    case ShaderInfo::ShaderParamType::Color:
+      case ShaderInfo::ParamType::Color:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_RGBA,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, 7701,
-            p_end                   // End of the first parameter definition
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_RGBA,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_COLORSWATCH, first_ctrl_res_id,
+            p_end
         );
         break;
-    case ShaderInfo::ShaderParamType::ColorAlpha:
+      case ShaderInfo::ParamType::ColorAlpha:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_RGBA,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, 7701,
-            p_end                   // End of the first parameter definition
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_RGBA,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_COLORSWATCH, first_ctrl_res_id,
+            p_end
         );
         break;
-    case ShaderInfo::ShaderParamType::TextureColor:
+      case ShaderInfo::ParamType::TextureColor:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_TEXMAP,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_TEXMAPBUTTON, 7701,
-            p_end                   // End of the first parameter definition
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_TEXMAP,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_TEXMAPBUTTON, first_ctrl_res_id,
+            p_end
         );
         break;
-    case ShaderInfo::ShaderParamType::Point:
+      case ShaderInfo::ParamType::Point:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_POINT3,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, 7701,
-            p_end                   // End of the first parameter definition
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_POINT3,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_SPINNER, EDITTYPE_UNIVERSE, first_ctrl_res_id, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), SPIN_AUTOSCALE,
+            p_end
         );
         break;
-    case ShaderInfo::ShaderParamType::String:
+      case ShaderInfo::ParamType::String:
         pb_desc->AddParam(
-            param_info.m_pid,       // Parameter ID. We are defining the first parameter here
-            param_info.m_param_name,// Internal name of the parameter
-            TYPE_RGBA,              // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_COLORSWATCH, 7701,
-            p_end                   // End of the first parameter definition
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_STRING,
+            0,
+            param_info->m_label_res_id,
+            p_ui, TYPE_EDITBOX, first_ctrl_res_id,
+            p_end
         );
         break;
+      default:
+          DbgAssert(false);
+          break;
     }
     
 }

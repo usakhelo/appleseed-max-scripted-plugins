@@ -32,6 +32,9 @@
 #include "foundation/platform/windows.h"    // include before 3ds Max headers
 #include "foundation/utility/autoreleaseptr.h"
 
+// appleseed-max headers.
+#include "oslshaderregistry.h"
+
 // 3ds Max headers.
 #include <IMaterialBrowserEntryInfo.h>
 #include <IMtlRender_Compatibility.h>
@@ -43,8 +46,9 @@
 #include <stdmat.h>
 #undef base_type
 
-struct ShaderInfo;
-struct ShaderParamInfo;
+// Stadard headers.
+#include <map>
+
 class ClassDesc2;
 
 class GenericOSLTexture
@@ -154,7 +158,7 @@ public:
     void create_parameter_block_desc();
 
 private:
-    void add_parameter(ParamBlockDesc2* pb_desc, const ShaderParamInfo& param_info);
+    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info);
 
     wchar_t*                            m_class_name;
     wchar_t*                            m_internal_name;
@@ -163,4 +167,7 @@ private:
 
     ShaderInfo*                         m_shader_info;
     MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
+
+    std::map<int, const ShaderInfo::ParamInfo*> m_label_map;
+    std::map<int, const ShaderInfo::ParamInfo*> m_ctrl_id_map;
 };
