@@ -133,8 +133,10 @@ Animatable* GenericOSLTexture::SubAnim(int i)
 {
     switch (i)
     {
-    case 0: return m_pblock;
-    default: return nullptr;
+      case 0:
+        return m_pblock;
+      default:
+        return nullptr;
     }
 }
 
@@ -142,8 +144,10 @@ TSTR GenericOSLTexture::SubAnimName(int i)
 {
     switch (i)
     {
-    case 0: return L"Parameters";
-    default: return nullptr;
+      case 0:
+        return L"Parameters";
+      default:
+        return nullptr;
     }
 }
 
@@ -185,7 +189,9 @@ void GenericOSLTexture::SetReference(int i, RefTargetHandle rtarg)
 {
     switch (i)
     {
-    case 0: m_pblock = (IParamBlock2 *)rtarg; break;
+      case 0:
+        m_pblock = (IParamBlock2 *)rtarg;
+        break;
     }
 }
 
@@ -198,12 +204,12 @@ RefResult GenericOSLTexture::NotifyRefChanged(
 {
     switch (message)
     {
-    case REFMSG_TARGET_DELETED:
+      case REFMSG_TARGET_DELETED:
         if (hTarget == m_pblock)
             m_pblock = nullptr;
         break;
 
-    case REFMSG_CHANGE:
+      case REFMSG_CHANGE:
         if (hTarget == m_pblock)
             m_class_desc->GetParamBlockDesc(0)->InvalidateUI(m_pblock->LastNotifyParamID());
         break;
@@ -500,15 +506,13 @@ void GenericOSLTextureClassDesc::create_parameter_block_desc()
         0,                                          // parameter block's reference number
         p_end
     ));
+    
+    for (auto& param_info : m_shader_info->m_params)
+    {
+        add_parameter(m_param_block_desc.Get(), param_info);
 
-    ShaderParamInfo sh_params;
-    sh_params.m_param_name = L"p0";
-    sh_params.m_param_type = ShaderParamType::Color;
-    sh_params.m_pid = 0;
-    sh_params.m_str_id = 19780;
-    sh_params.m_ui_id = 7701;
-
-    add_parameter(m_param_block_desc.Get(), sh_params)
+    }
+    /*
     m_param_block_desc->AddParam(
         0,                      // Parameter ID. We are defining the first parameter here
         L"p0",                  // Internal name of the parameter
@@ -527,8 +531,7 @@ void GenericOSLTextureClassDesc::create_parameter_block_desc()
         p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
         p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
     );
-
-    
+    */
 }
 
 void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, const ShaderParamInfo& param_info)
@@ -550,76 +553,83 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, const S
 
     switch (param_info.m_param_type)
     {
-    case Float:
+    case ShaderInfo::ShaderParamType::Float:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_FLOAT,             // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, SPIN_AUTOSCALE,
             p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
         );
-    case Int:
+        break;
+    case ShaderInfo::ShaderParamType::Int:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_INT,             // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10,
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, SPIN_AUTOSCALE,
             p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
         );
-    case Color:
+        break;
+    case ShaderInfo::ShaderParamType::Color:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_RGBA,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            param_info.m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
             p_ui, TYPE_COLORSWATCH, 7701,
             p_end                   // End of the first parameter definition
         );
-    case ColorAlpha:
+        break;
+    case ShaderInfo::ShaderParamType::ColorAlpha:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_RGBA,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
             p_ui, TYPE_COLORSWATCH, 7701,
             p_end                   // End of the first parameter definition
         );
-    case TextureColor:
+        break;
+    case ShaderInfo::ShaderParamType::TextureColor:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_TEXMAP,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
             p_ui, TYPE_TEXMAPBUTTON, 7701,
             p_end                   // End of the first parameter definition
         );
-    case Point:
+        break;
+    case ShaderInfo::ShaderParamType::Point:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_POINT3,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
             p_ui, TYPE_COLORSWATCH, 7701,
             p_end                   // End of the first parameter definition
         );
-    case String:
+        break;
+    case ShaderInfo::ShaderParamType::String:
         pb_desc->AddParam(
             param_info.m_pid,       // Parameter ID. We are defining the first parameter here
             param_info.m_param_name,// Internal name of the parameter
             TYPE_RGBA,              // Parameter Type. It will be a float parameter
             P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info.m_str_id,    // string table id, e.g. IDS_BASE_COLOR
+            param_info.m_label_res_id,    // string table id, e.g. IDS_BASE_COLOR
             p_ui, TYPE_COLORSWATCH, 7701,
             p_end                   // End of the first parameter definition
         );
+        break;
     }
     
 }

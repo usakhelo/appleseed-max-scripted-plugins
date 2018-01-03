@@ -44,6 +44,7 @@
 #undef base_type
 
 struct ShaderInfo;
+struct ShaderParamInfo;
 class ClassDesc2;
 
 class GenericOSLTexture
