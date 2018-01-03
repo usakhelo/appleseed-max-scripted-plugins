@@ -39,27 +39,18 @@ namespace
 {
     class OSLTextureParamDlg : public ParamDlg 
     {
-        Class_ID m_class_id;
-
       public:
-        GenericOSLTexture* m_texture;
-        HWND  	hmedit;
-        IMtlParams* m_imp;
-        IParamMap2* m_pmap;
 
-        OSLTextureParamDlg(HWND hwMtlEdit, IMtlParams* imp, GenericOSLTexture* map)
-            : m_texture(map)
+
+        OSLTextureParamDlg(HWND hwMtlEdit, IMtlParams* imp, GenericOSLTexture* map, ShaderInfo* shader_info)
+            : m_hmedit(hwMtlEdit)
             , m_imp(imp)
+            , m_texture(map)
+            , m_shader_info(shader_info)
+            , m_y_pos(6)
         {
             m_class_id = m_texture->ClassID();
-
-            DialogTemplate dialogTemplate((LPCSTR)"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
-            dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
-            dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 7701);
-            dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 7703);
-            dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
-
-            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, hwMtlEdit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
+            create_dialog();
         }
 
         Class_ID ClassID() override
@@ -89,6 +80,97 @@ namespace
         void SetTime(TimeValue t) {}
         void ReloadDialog(void) {}
         void ActivateDlg(BOOL onOff) {}
+    
+    private:
+        void add_ui_parameter(DialogTemplate& dialog_template, ShaderInfo::ParamInfo* param_info)
+        {
+            switch (param_info->m_param_type)
+            {
+            case ShaderInfo::ParamType::Float:
+            {
+                dialog_template.AddStatic((LPCSTR)"Float:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
+                dialog_template.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, m_y_pos, 35, 10, param_info->m_ctrl_res_id + 1);
+                dialog_template.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, m_y_pos, 7, 10, param_info->m_ctrl_res_id + 2);
+            }
+            break;
+            case ShaderInfo::ParamType::Int:
+                break;
+            case ShaderInfo::ParamType::Color:
+                dialog_template.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
+                dialog_template.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, m_y_pos, 30, 10, param_info->m_ctrl_res_id + 1);
+                break;
+            case ShaderInfo::ParamType::ColorAlpha:
+                break;
+            case ShaderInfo::ParamType::TextureColor:
+                break;
+            case ShaderInfo::ParamType::Point:
+                break;
+            case ShaderInfo::ParamType::String:
+                break;
+            default:
+                DbgAssert(false);
+                break;
+            }
+
+            m_y_pos += 12;
+        }
+
+        void setup_ui_parameter(HWND hwnd, ShaderInfo::ParamInfo* param_info)
+        {
+            switch (param_info->m_param_type)
+            {
+            case ShaderInfo::ParamType::Float:
+            {
+                ISpinnerControl* spin = SetupFloatSpinner(hwnd, param_info->m_ctrl_res_id + 1, param_info->m_ctrl_res_id + 2, 0.0f, 1000.0f, 0.0f);
+                ReleaseISpinner(spin);
+            }
+                break;
+            case ShaderInfo::ParamType::Int:
+                break;
+            case ShaderInfo::ParamType::Color:
+                break;
+            case ShaderInfo::ParamType::ColorAlpha:
+                break;
+            case ShaderInfo::ParamType::TextureColor:
+                break;
+            case ShaderInfo::ParamType::Point:
+                break;
+            case ShaderInfo::ParamType::String:
+                break;
+            default:
+                DbgAssert(false);
+                break;
+            }
+
+            m_y_pos += 12;
+        }
+
+        void create_dialog()
+        {
+            DialogTemplate dialogTemplate((LPCSTR)"OSL Texture"/*m_shader_info->m_shader_name*/, DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
+            
+            //dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
+            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 7701);
+            //dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 7703);
+            //dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
+            for (auto param_info : m_shader_info->m_params)
+            {
+                add_ui_parameter(dialogTemplate, param_info);
+            }
+            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
+            for (auto param_info : m_shader_info->m_params)
+            {
+                setup_ui_parameter(m_pmap->GetHWnd(), param_info);
+            }
+        }
+
+        int                 m_y_pos;
+        GenericOSLTexture*  m_texture;
+        HWND  	            m_hmedit;
+        IMtlParams*         m_imp;
+        IParamMap2*         m_pmap;
+        ShaderInfo*         m_shader_info;
+        Class_ID            m_class_id;
     };
 }
 
@@ -331,7 +413,7 @@ namespace
 
 ParamDlg* GenericOSLTexture::CreateParamDlg(HWND hwMtlEdit, IMtlParams* imp)
 {
-    ParamDlg* master_dlg = nullptr; // new OSLTextureParamDlg(hwMtlEdit, imp, this);
+    ParamDlg* master_dlg = new OSLTextureParamDlg(hwMtlEdit, imp, this, static_cast<GenericOSLTextureClassDesc*>(m_class_desc)->m_shader_info);
     //m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
     return master_dlg;
 }
@@ -517,26 +599,6 @@ void GenericOSLTextureClassDesc::create_parameter_block_desc()
     {
         add_parameter(m_param_block_desc.Get(), param_info);
     }
-    /*
-    m_param_block_desc->AddParam(
-        0,                      // Parameter ID. We are defining the first parameter here
-        L"p0",                  // Internal name of the parameter
-        TYPE_RGBA,              // Parameter Type. It will be a float parameter
-        P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-        19780,                  // string table id, e.g. IDS_BASE_COLOR
-        p_ui, TYPE_COLORSWATCH, 7701,
-        p_end                   // End of the first parameter definition
-    );
-    m_param_block_desc->AddParam(
-        1,                      // Parameter ID. This will be the second parameter
-        L"p1",                  // Internal name of the parameter
-        TYPE_FLOAT,             // Parameter Type. It will be a float parameter
-        P_ANIMATABLE,           // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-        19781,                  //string table id, e.g. IDS_BASE_COLOR
-        p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, 7703, 7704, 10.0f,
-        p_end                   // End of the second parameter definition. 'end' is an enumerated value defined in
-    );
-    */
 }
 
 void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info)
@@ -558,8 +620,9 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
 
     param_info->m_label_res_id = get_res_id();
     m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
-    int first_ctrl_res_id = get_res_id();
-    m_ctrl_id_map.insert(std::make_pair(first_ctrl_res_id, param_info));
+
+    param_info->m_ctrl_res_id = get_res_id();
+    //m_ctrl_id_map.insert(std::make_pair(reserve_res_id, param_info));
 
     switch (param_info->m_param_type)
     {
@@ -570,7 +633,9 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
             P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
             param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, first_ctrl_res_id, get_res_id(), SPIN_AUTOSCALE,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), SPIN_AUTOSCALE,
+            p_default, 0.0f,
+            p_range, 0.0f, 1000.0f,
             p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
         );
         break;
@@ -581,7 +646,9 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_INT,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, first_ctrl_res_id, get_res_id(), SPIN_AUTOSCALE,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), SPIN_AUTOSCALE,
+            p_default, 1,
+            p_range, 0, 1000,
             p_end
         );
         break;
@@ -592,7 +659,7 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_RGBA,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, first_ctrl_res_id,
+            p_ui, TYPE_COLORSWATCH, get_res_id(),
             p_end
         );
         break;
@@ -603,7 +670,7 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_RGBA,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, first_ctrl_res_id,
+            p_ui, TYPE_COLORSWATCH, get_res_id(),
             p_end
         );
         break;
@@ -614,7 +681,7 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_TEXMAP,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_TEXMAPBUTTON, first_ctrl_res_id,
+            p_ui, TYPE_TEXMAPBUTTON, get_res_id(),
             p_end
         );
         break;
@@ -625,7 +692,7 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_POINT3,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_UNIVERSE, first_ctrl_res_id, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), SPIN_AUTOSCALE,
+            p_ui, TYPE_SPINNER, EDITTYPE_UNIVERSE, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), SPIN_AUTOSCALE,
             p_end
         );
         break;
@@ -636,7 +703,7 @@ void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderI
             TYPE_STRING,
             0,
             param_info->m_label_res_id,
-            p_ui, TYPE_EDITBOX, first_ctrl_res_id,
+            p_ui, TYPE_EDITBOX, get_res_id(),
             p_end
         );
         break;

@@ -157,6 +157,8 @@ public:
 
     void create_parameter_block_desc();
 
+    ShaderInfo*                         m_shader_info;
+
 private:
     void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info);
 
@@ -165,7 +167,6 @@ private:
     Class_ID                            m_class_id;
     GenericOSLTextureBrowserEntryInfo   m_browser_entry_info;
 
-    ShaderInfo*                         m_shader_info;
     MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
 
     std::map<int, const ShaderInfo::ParamInfo*> m_label_map;

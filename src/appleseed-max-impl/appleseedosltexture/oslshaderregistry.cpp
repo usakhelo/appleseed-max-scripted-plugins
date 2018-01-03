@@ -51,19 +51,19 @@ namespace
         shader_2.m_class_id = Class_ID(0x1aaa49a9, 0x7539328e);
         shader_2.m_internal_name = L"osl_Ramp";
 
-        sh3_params.m_param_name = L"p0";
-        sh3_params.m_param_type = ShaderInfo::ParamType::Color;
-        sh3_params.m_pid = get_param_id();
-        sh3_params.m_label_str = L"Color Param";
-
-        shader_2.m_params.push_back(&sh3_params);
-
         sh4_params.m_param_name = L"p1";
         sh4_params.m_param_type = ShaderInfo::ParamType::Float;
         sh4_params.m_pid = get_param_id();
         sh4_params.m_label_str = L"Float Param";
 
         shader_2.m_params.push_back(&sh4_params);
+
+        sh3_params.m_param_name = L"p0";
+        sh3_params.m_param_type = ShaderInfo::ParamType::Color;
+        sh3_params.m_pid = get_param_id();
+        sh3_params.m_label_str = L"Color Param";
+
+        shader_2.m_params.push_back(&sh3_params);
     }
 }
 
