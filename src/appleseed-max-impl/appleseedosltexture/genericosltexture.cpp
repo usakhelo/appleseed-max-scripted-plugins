@@ -1,3 +1,4 @@
+
 // Interface header.
 #include "genericosltexture.h"
 
@@ -8,8 +9,11 @@
 #include "utilities.h"
 #include "version.h"
 
-#include "maxscript\maxscript.h"
-#include "maxscript\util\listener.h"
+// 3ds Max headers.
+#include <iparamm2.h>
+#include <maxscript\maxscript.h>
+#include <maxscript\util\listener.h>
+
 namespace asf = foundation;
 namespace asr = renderer;
 
@@ -37,6 +41,37 @@ namespace
 
 namespace
 {
+    class OSLTextureDlgProc : public ParamMap2UserDlgProc {
+      public:
+        INT_PTR DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+        {
+            IParamBlock2* pblock = map->GetParamBlock();
+            int id = LOWORD(wParam);
+            switch (msg)
+            {
+              case WM_INITDIALOG:
+              {
+                  ISpinnerControl* spin = (ISpinnerControl *)GetISpinner(GetDlgItem(hWnd, 105));
+                  if (spin != nullptr)
+                  {
+                      spin = SetupFloatSpinner(hWnd, 105, 106, 0.0f, 100.0f, 0.0f);
+                      //spin->SetValue(100, FALSE);
+                      ReleaseISpinner(spin);
+                  }
+              }
+                break;
+              case WM_DESTROY:
+                break;
+              case WM_COMMAND:
+                break;
+            }
+            return FALSE;
+        }
+        void DeleteThis() { /*delete this;*/ }
+    };
+
+    OSLTextureDlgProc dlg_proc;
+
     class OSLTextureParamDlg : public ParamDlg 
     {
       public:
@@ -157,7 +192,7 @@ namespace
             {
                 add_ui_parameter(dialogTemplate, param_info);
             }
-            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
+            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0, &dlg_proc);
             for (auto param_info : m_shader_info->m_params)
             {
                 setup_ui_parameter(m_pmap->GetHWnd(), param_info);

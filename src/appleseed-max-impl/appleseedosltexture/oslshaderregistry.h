@@ -1,8 +1,11 @@
 
 #pragma once
+
+// 3ds Max headers.
 #include <maxtypes.h>
 #include <iparamb2.h>
 
+// Standard headers.
 #include <vector>
 
 struct ShaderInfo

@@ -1,11 +1,15 @@
 
+// Interface header.
 #include "oslshaderregistry.h"
 
+// appleseed-max headers.
 #include "genericosltexture.h"
 
+// 3ds Max headers.
 #include <iparamb2.h>
 #include <maxtypes.h>
 
+// Standard headers.
 #include <vector>
 #include <memory>
 
