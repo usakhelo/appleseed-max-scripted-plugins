@@ -29,13 +29,6 @@ const USHORT ChunkMtlBase = 0x1000;
 namespace
 {
     const wchar_t* GenericOSLTextureFriendlyClassName = L"appleseed osl texture";
-
-    int res_id = 100;
-
-    int get_res_id()
-    {
-        return res_id++;
-    }
 }
 
 
@@ -182,21 +175,21 @@ namespace
 
         void create_dialog()
         {
-            DialogTemplate dialogTemplate((LPCSTR)"OSL Texture"/*m_shader_info->m_shader_name*/, DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
+            DialogTemplate dialogTemplate((LPCSTR)"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
             
-            //dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 7705);
-            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 7701);
-            //dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 7703);
-            //dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 7704);
+            //dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 8001);
+            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 8002);
+            //dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 8005);
+            //dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 8006);
             for (auto param_info : m_shader_info->m_params)
             {
                 add_ui_parameter(dialogTemplate, param_info);
             }
-            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0, &dlg_proc);
-            for (auto param_info : m_shader_info->m_params)
-            {
-                setup_ui_parameter(m_pmap->GetHWnd(), param_info);
-            }
+            m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
+            //for (auto param_info : m_shader_info->m_params)
+            //{
+            //    setup_ui_parameter(m_pmap->GetHWnd(), param_info);
+            //}
         }
 
         int                 m_y_pos;
@@ -547,7 +540,7 @@ GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info)
 {
     IMtlRender_Compatibility_MtlBase::Init(*this);
 
-    create_parameter_block_desc();
+    //create_parameter_block_desc();
 }
 
 int GenericOSLTextureClassDesc::IsPublic()
@@ -557,7 +550,7 @@ int GenericOSLTextureClassDesc::IsPublic()
 
 void* GenericOSLTextureClassDesc::Create(BOOL loading)
 {
-    return new GenericOSLTexture(m_class_id, this);
+    return new GenericOSLTexture(m_shader_info->m_class_id, this);
 }
 
 const MCHAR* GenericOSLTextureClassDesc::ClassName()
@@ -601,11 +594,11 @@ HINSTANCE GenericOSLTextureClassDesc::HInstance()
 
 const MCHAR* GenericOSLTextureClassDesc::GetRsrcString(INT_PTR id)
 {
-    const auto it = m_label_map.find(static_cast<int>(id));
-
-    if (it != m_label_map.end())
-        return it->second->m_label_str;
-    else
+//    const auto it = m_label_map.find(static_cast<int>(id));
+//
+//    if (it != m_label_map.end())
+//        return it->second->m_label_str;
+//    else
         return ClassDesc2::GetRsrcString(id);
 }
 
@@ -613,138 +606,4 @@ bool GenericOSLTextureClassDesc::IsCompatibleWithRenderer(ClassDesc& renderer_cl
 {
     // Before 3ds Max 2017, Class_ID::operator==() returned an int.
     return renderer_class_desc.ClassID() == AppleseedRenderer::get_class_id() ? true : false;
-}
-
-void GenericOSLTextureClassDesc::create_parameter_block_desc()
-{
-    m_param_block_desc.Reset(new ParamBlockDesc2(
-        // --- Required arguments ---
-        0,                                          // parameter block's ID
-        L"oslTextureMapParams",                     // internal parameter block's name
-        0,                                          // ID of the localized name string
-        this,                                       // class descriptor
-        P_AUTO_CONSTRUCT,                           // block flags
-
-                                                    // --- P_AUTO_CONSTRUCT arguments ---
-        0,                                          // parameter block's reference number
-        p_end
-    ));
-    
-    for (auto param_info : m_shader_info->m_params)
-    {
-        add_parameter(m_param_block_desc.Get(), param_info);
-    }
-}
-
-void GenericOSLTextureClassDesc::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info)
-{
-    /*supports following controls
-
-    TYPE_SPINNER,
-    TYPE_RADIO,
-    TYPE_SINGLECHEKBOX,
-    TYPE_COLORSWATCH,
-    TYPE_EDITBOX
-    TYPE_CHECKBUTTON,
-    TYPE_TEXMAPBUTTON,
-    TYPE_MTLBUTTON,
-    TYPE_SLIDER,
-    TYPE_COLORSWATCH_FRGBA,
-    TYPE_INT_COMBOBOX,
-    */
-
-    param_info->m_label_res_id = get_res_id();
-    m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
-
-    param_info->m_ctrl_res_id = get_res_id();
-    //m_ctrl_id_map.insert(std::make_pair(reserve_res_id, param_info));
-
-    switch (param_info->m_param_type)
-    {
-      case ShaderInfo::ParamType::Float:
-        pb_desc->AddParam(
-            param_info->m_pid,           // Parameter ID. We are defining the first parameter here
-            param_info->m_param_name,    // Internal name of the parameter
-            TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
-            P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
-            param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), SPIN_AUTOSCALE,
-            p_default, 0.0f,
-            p_range, 0.0f, 1000.0f,
-            p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
-        );
-        break;
-      case ShaderInfo::ParamType::Int:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_INT,
-            P_ANIMATABLE,
-            param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), SPIN_AUTOSCALE,
-            p_default, 1,
-            p_range, 0, 1000,
-            p_end
-        );
-        break;
-      case ShaderInfo::ParamType::Color:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_RGBA,
-            P_ANIMATABLE,
-            param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, get_res_id(),
-            p_end
-        );
-        break;
-      case ShaderInfo::ParamType::ColorAlpha:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_RGBA,
-            P_ANIMATABLE,
-            param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, get_res_id(),
-            p_end
-        );
-        break;
-      case ShaderInfo::ParamType::TextureColor:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_TEXMAP,
-            P_ANIMATABLE,
-            param_info->m_label_res_id,
-            p_ui, TYPE_TEXMAPBUTTON, get_res_id(),
-            p_end
-        );
-        break;
-      case ShaderInfo::ParamType::Point:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_POINT3,
-            P_ANIMATABLE,
-            param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_UNIVERSE, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), SPIN_AUTOSCALE,
-            p_end
-        );
-        break;
-      case ShaderInfo::ParamType::String:
-        pb_desc->AddParam(
-            param_info->m_pid,
-            param_info->m_param_name,
-            TYPE_STRING,
-            0,
-            param_info->m_label_res_id,
-            p_ui, TYPE_EDITBOX, get_res_id(),
-            p_end
-        );
-        break;
-      default:
-          DbgAssert(false);
-          break;
-    }
-    
 }

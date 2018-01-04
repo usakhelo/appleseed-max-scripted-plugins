@@ -155,20 +155,17 @@ public:
     // IMtlRender_Compatibility_MtlBase methods.
     virtual bool IsCompatibleWithRenderer(ClassDesc& renderer_class_desc) override;
 
-    void create_parameter_block_desc();
-
     ShaderInfo*                         m_shader_info;
 
 private:
-    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info);
 
     wchar_t*                            m_class_name;
     wchar_t*                            m_internal_name;
     Class_ID                            m_class_id;
     GenericOSLTextureBrowserEntryInfo   m_browser_entry_info;
 
-    MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
+    //MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
 
-    std::map<int, const ShaderInfo::ParamInfo*> m_label_map;
-    std::map<int, const ShaderInfo::ParamInfo*> m_ctrl_id_map;
+    //std::map<int, const ShaderInfo::ParamInfo*> m_label_map;
+    //std::map<int, const ShaderInfo::ParamInfo*> m_ctrl_id_map;
 };

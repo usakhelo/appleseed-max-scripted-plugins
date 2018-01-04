@@ -30,6 +30,13 @@ namespace
         return param_id++;
     }
 
+    int res_id = 8000;
+
+    int get_res_id()
+    {
+        return res_id++;
+    }
+
     void fill_shader_info()
     {
         shader_1.m_shader_name = L"OSL_Noise";
@@ -78,10 +85,138 @@ void OSLShaderRegistry::create_class_descriptors()
 
     for (auto sh : m_shaders)
     {
-        MaxSDK::AutoPtr<ClassDesc2> class_descr(new GenericOSLTextureClassDesc(sh));
+        ClassDesc2* class_descr(new GenericOSLTextureClassDesc(sh));
+        ParamBlockDesc2* param_block_descr(new ParamBlockDesc2(
+            // --- Required arguments ---
+            0,                                          // parameter block's ID
+            L"oslTextureMapParams",                     // internal parameter block's name
+            0,                                          // ID of the localized name string
+            class_descr,                                // class descriptor
+            P_AUTO_CONSTRUCT,                           // block flags
 
+                                                        // --- P_AUTO_CONSTRUCT arguments ---
+            0,                                          // parameter block's reference number
+            p_end
+        ));
+
+        for (auto param_info : sh->m_params)
+        {
+            add_parameter(param_block_descr, param_info);
+        }
+
+        m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));
         m_class_descriptors.push_back(MaxSDK::AutoPtr<ClassDesc2>(class_descr));
     }
+}
+
+
+void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info)
+{
+    /*supports following controls
+
+    TYPE_SPINNER,
+    TYPE_RADIO,
+    TYPE_SINGLECHEKBOX,
+    TYPE_COLORSWATCH,
+    TYPE_EDITBOX
+    TYPE_CHECKBUTTON,
+    TYPE_TEXMAPBUTTON,
+    TYPE_MTLBUTTON,
+    TYPE_SLIDER,
+    TYPE_COLORSWATCH_FRGBA,
+    TYPE_INT_COMBOBOX,
+    */
+
+    param_info->m_label_res_id = get_res_id();
+    //m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
+
+    param_info->m_ctrl_res_id = get_res_id();
+    //m_ctrl_id_map.insert(std::make_pair(reserve_res_id, param_info));
+
+    switch (param_info->m_param_type)
+    {
+    case ShaderInfo::ParamType::Float:
+        pb_desc->AddParam(
+            param_info->m_pid,           // Parameter ID. We are defining the first parameter here
+            param_info->m_param_name,    // Internal name of the parameter
+            TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
+            P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
+            param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), 10.0f,
+            p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
+        );
+        break;
+    case ShaderInfo::ParamType::Int:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_INT,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_SPINNER, EDITTYPE_INT, get_res_id(), get_res_id(), 10,
+            p_end
+        );
+        break;
+    case ShaderInfo::ParamType::Color:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_RGBA,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_COLORSWATCH, get_res_id(),
+            p_end
+        );
+        break;
+    case ShaderInfo::ParamType::ColorAlpha:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_RGBA,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_COLORSWATCH, get_res_id(),
+            p_end
+        );
+        break;
+    case ShaderInfo::ParamType::TextureColor:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_TEXMAP,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_TEXMAPBUTTON, get_res_id(),
+            p_end
+        );
+        break;
+    case ShaderInfo::ParamType::Point:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_POINT3,
+            P_ANIMATABLE,
+            param_info->m_label_res_id,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), 10.0f,
+            p_end
+        );
+        break;
+    case ShaderInfo::ParamType::String:
+        pb_desc->AddParam(
+            param_info->m_pid,
+            param_info->m_param_name,
+            TYPE_STRING,
+            0,
+            param_info->m_label_res_id,
+            p_ui, TYPE_EDITBOX, get_res_id(),
+            p_end
+        );
+        break;
+    default:
+        DbgAssert(false);
+        break;
+    }
+
 }
 
 OSLShaderRegistry::OSLShaderRegistry()
