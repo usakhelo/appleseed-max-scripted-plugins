@@ -431,16 +431,14 @@ Bitmap* GenericOSLTextureBrowserEntryInfo::GetEntryThumbnail() const
 // GenericOSLTextureClassDesc class implementation.
 //
 
-GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info, std::map<int, const ShaderInfo::ParamInfo*>* label_map)
+GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info)
     : m_class_name(shader_info->m_shader_name)
     , m_internal_name(shader_info->m_internal_name)
     , m_class_id(shader_info->m_class_id)
     , m_shader_info(shader_info)
-    , m_label_map(label_map)
+
 {
     IMtlRender_Compatibility_MtlBase::Init(*this);
-
-    //create_parameter_block_desc();
 }
 
 int GenericOSLTextureClassDesc::IsPublic()
@@ -494,9 +492,9 @@ HINSTANCE GenericOSLTextureClassDesc::HInstance()
 
 const MCHAR* GenericOSLTextureClassDesc::GetRsrcString(INT_PTR id)
 {
-    const auto it = m_label_map->find(static_cast<int>(id));
+    const auto it = m_shader_info->m_label_map.find(static_cast<int>(id));
 
-    if (it != m_label_map->end())
+    if (it != m_shader_info->m_label_map.end())
         return it->second->m_label_str;
     else
         return ClassDesc2::GetRsrcString(id);

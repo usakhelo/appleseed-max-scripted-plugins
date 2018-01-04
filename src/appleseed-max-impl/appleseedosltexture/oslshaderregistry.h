@@ -30,13 +30,14 @@ struct ShaderInfo
         wchar_t*        m_label_str;
         int             m_label_res_id;
         int             m_ctrl_res_id;
-        int             m_num_of_ctrls;
     };
     
-    Class_ID                        m_class_id;
-    wchar_t*                        m_shader_name;
-    wchar_t*                        m_internal_name;
-    std::vector<ShaderInfo::ParamInfo*>    m_params;
+    Class_ID                                    m_class_id;
+    wchar_t*                                    m_shader_name;
+    wchar_t*                                    m_internal_name;
+    std::vector<ShaderInfo::ParamInfo*>         m_params;
+    std::map<int, const ShaderInfo::ParamInfo*> m_label_map;
+
 };
 
 class OSLShaderRegistry
@@ -47,11 +48,10 @@ class OSLShaderRegistry
     ClassDesc2* get_class_descriptor(int index);
     int get_size();
     void create_class_descriptors();
-    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info, int& ctrl_id);
+    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo* shader_info, ShaderInfo::ParamInfo* param_info, int& ctrl_id);
 
   private:
     std::vector<ShaderInfo*>                        m_shaders;
     std::vector<MaxSDK::AutoPtr<ClassDesc2>>        m_class_descriptors;
-    std::map<int, const ShaderInfo::ParamInfo*>     m_label_map;
     std::vector<MaxSDK::AutoPtr<ParamBlockDesc2>>   m_paramblock_descriptors;
 };

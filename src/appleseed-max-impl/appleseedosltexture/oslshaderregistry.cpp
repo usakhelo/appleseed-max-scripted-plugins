@@ -23,40 +23,29 @@ namespace
     ShaderInfo::ParamInfo sh3_params;
     ShaderInfo::ParamInfo sh4_params;
 
-    int param_id = 0;
-
-    int get_param_id()
-    {
-        return param_id++;
-    }
-
-    int res_id = 8000;
-
-    int get_res_id()
-    {
-        return res_id++;
-    }
-
     void fill_shader_info()
     {
+        int param_id = 0;
+
         shader_1.m_shader_name = L"OSL_Noise";
         shader_1.m_class_id = Class_ID(0x467936e2, 0x3f6c32f1);
         shader_1.m_internal_name = L"osl_Noise";
 
         sh1_params.m_param_name = L"p0";
         sh1_params.m_param_type = ShaderInfo::ParamType::Color;
-        sh1_params.m_pid = get_param_id();
+        sh1_params.m_pid = param_id++;
         sh1_params.m_label_str = L"Color Param";
 
         shader_1.m_params.push_back(&sh1_params);
 
         sh2_params.m_param_name = L"p1";
         sh2_params.m_param_type = ShaderInfo::ParamType::Float;
-        sh2_params.m_pid = get_param_id();
+        sh2_params.m_pid = param_id++;
         sh2_params.m_label_str = L"Float Param";
 
         shader_1.m_params.push_back(&sh2_params);
 
+        param_id = 0;
 
         shader_2.m_shader_name = L"OSL_Ramp";
         shader_2.m_class_id = Class_ID(0x1aaa49a9, 0x7539328e);
@@ -64,14 +53,14 @@ namespace
 
         sh4_params.m_param_name = L"p1";
         sh4_params.m_param_type = ShaderInfo::ParamType::Float;
-        sh4_params.m_pid = get_param_id();
+        sh4_params.m_pid = param_id++;
         sh4_params.m_label_str = L"Float Param";
 
         shader_2.m_params.push_back(&sh4_params);
 
         sh3_params.m_param_name = L"p0";
         sh3_params.m_param_type = ShaderInfo::ParamType::Color;
-        sh3_params.m_pid = get_param_id();
+        sh3_params.m_pid = param_id++;
         sh3_params.m_label_str = L"Color Param";
 
         shader_2.m_params.push_back(&sh3_params);
@@ -85,7 +74,7 @@ void OSLShaderRegistry::create_class_descriptors()
 
     for (auto sh : m_shaders)
     {
-        ClassDesc2* class_descr(new GenericOSLTextureClassDesc(sh, &m_label_map));
+        ClassDesc2* class_descr(new GenericOSLTextureClassDesc(sh));
         ParamBlockDesc2* param_block_descr(new ParamBlockDesc2(
             // --- Required arguments ---
             0,                                          // parameter block's ID
@@ -102,7 +91,7 @@ void OSLShaderRegistry::create_class_descriptors()
         int ctrl_id = 100;
         for (auto param_info : sh->m_params)
         {
-            add_parameter(param_block_descr, param_info, ctrl_id);
+            add_parameter(param_block_descr, sh, param_info, ctrl_id);
         }
 
         m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));
@@ -111,7 +100,7 @@ void OSLShaderRegistry::create_class_descriptors()
 }
 
 
-void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info, int& ctrl_id)
+void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo* shader_info, ShaderInfo::ParamInfo* param_info, int& ctrl_id)
 {
     /*supports following controls
 
@@ -129,6 +118,8 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
     */
 
     param_info->m_label_res_id = ctrl_id;
+    shader_info->m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
+    
     param_info->m_ctrl_res_id = ctrl_id++;
 
     int param_1 = ctrl_id++;
@@ -137,7 +128,6 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
     int param_4 = ctrl_id++;
     int param_5 = ctrl_id++;
     int param_6 = ctrl_id++;
-    m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
 
     switch (param_info->m_param_type)
     {
@@ -148,7 +138,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
             P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
             param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, param_1, param_2, 10.0f,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, param_1, param_2, 1.0f,
             p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
         );
         break;
@@ -159,7 +149,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_INT,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_INT, param_1, param_2, 10,
+            p_ui, TYPE_SPINNER, EDITTYPE_INT, param_1, param_2, 1,
             p_end
         );
         break;
