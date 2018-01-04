@@ -7,6 +7,7 @@
 
 // Standard headers.
 #include <vector>
+#include <map>
 
 struct ShaderInfo
 {
@@ -49,7 +50,8 @@ class OSLShaderRegistry
     void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info, int& ctrl_id);
 
   private:
-    std::vector<ShaderInfo*> m_shaders;
-    std::vector<MaxSDK::AutoPtr<ClassDesc2>> m_class_descriptors;
-    std::vector<MaxSDK::AutoPtr<ParamBlockDesc2>> m_paramblock_descriptors;
+    std::vector<ShaderInfo*>                        m_shaders;
+    std::vector<MaxSDK::AutoPtr<ClassDesc2>>        m_class_descriptors;
+    std::map<int, const ShaderInfo::ParamInfo*>     m_label_map;
+    std::vector<MaxSDK::AutoPtr<ParamBlockDesc2>>   m_paramblock_descriptors;
 };

@@ -139,7 +139,7 @@ class GenericOSLTextureClassDesc
     , public IMtlRender_Compatibility_MtlBase
 {
 public:
-    explicit GenericOSLTextureClassDesc(ShaderInfo* shader_info);
+    explicit GenericOSLTextureClassDesc(ShaderInfo* shader_info, std::map<int, const ShaderInfo::ParamInfo*>* label_map);
     virtual int IsPublic() override;
     virtual void* Create(BOOL loading) override;
     virtual const wchar_t* ClassName() override;
@@ -166,6 +166,6 @@ private:
 
     //MaxSDK::AutoPtr<ParamBlockDesc2>    m_param_block_desc;
 
-    //std::map<int, const ShaderInfo::ParamInfo*> m_label_map;
+    std::map<int, const ShaderInfo::ParamInfo*>* m_label_map;
     //std::map<int, const ShaderInfo::ParamInfo*> m_ctrl_id_map;
 };

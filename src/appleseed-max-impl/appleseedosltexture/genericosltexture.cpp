@@ -85,16 +85,16 @@ namespace
             {
             case ShaderInfo::ParamType::Float:
             {
-                dialog_template.AddStatic((LPCSTR)"Float:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, 9000);
-                dialog_template.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, m_y_pos, 35, 10, param_info->m_ctrl_res_id);
-                dialog_template.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, m_y_pos, 7, 10, param_info->m_ctrl_res_id + 1);
+                dialog_template.AddStatic((LPCSTR)"Float:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
+                dialog_template.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, m_y_pos, 35, 10, param_info->m_ctrl_res_id+1);
+                dialog_template.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, m_y_pos, 7, 10, param_info->m_ctrl_res_id+2);
             }
             break;
             case ShaderInfo::ParamType::Int:
                 break;
             case ShaderInfo::ParamType::Color:
-                dialog_template.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, 9000);
-                dialog_template.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, m_y_pos, 30, 10, param_info->m_ctrl_res_id);
+                dialog_template.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
+                dialog_template.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, m_y_pos, 30, 10, param_info->m_ctrl_res_id + 1);
                 break;
             case ShaderInfo::ParamType::ColorAlpha:
                 break;
@@ -431,11 +431,12 @@ Bitmap* GenericOSLTextureBrowserEntryInfo::GetEntryThumbnail() const
 // GenericOSLTextureClassDesc class implementation.
 //
 
-GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info)
+GenericOSLTextureClassDesc::GenericOSLTextureClassDesc(ShaderInfo* shader_info, std::map<int, const ShaderInfo::ParamInfo*>* label_map)
     : m_class_name(shader_info->m_shader_name)
     , m_internal_name(shader_info->m_internal_name)
     , m_class_id(shader_info->m_class_id)
     , m_shader_info(shader_info)
+    , m_label_map(label_map)
 {
     IMtlRender_Compatibility_MtlBase::Init(*this);
 
@@ -493,11 +494,11 @@ HINSTANCE GenericOSLTextureClassDesc::HInstance()
 
 const MCHAR* GenericOSLTextureClassDesc::GetRsrcString(INT_PTR id)
 {
-//    const auto it = m_label_map.find(static_cast<int>(id));
-//
-//    if (it != m_label_map.end())
-//        return it->second->m_label_str;
-//    else
+    const auto it = m_label_map->find(static_cast<int>(id));
+
+    if (it != m_label_map->end())
+        return it->second->m_label_str;
+    else
         return ClassDesc2::GetRsrcString(id);
 }
 
