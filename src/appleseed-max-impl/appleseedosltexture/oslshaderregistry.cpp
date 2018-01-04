@@ -99,9 +99,10 @@ void OSLShaderRegistry::create_class_descriptors()
             p_end
         ));
 
+        int ctrl_id = 100;
         for (auto param_info : sh->m_params)
         {
-            add_parameter(param_block_descr, param_info);
+            add_parameter(param_block_descr, param_info, ctrl_id);
         }
 
         m_paramblock_descriptors.push_back(MaxSDK::AutoPtr<ParamBlockDesc2>(param_block_descr));
@@ -110,7 +111,7 @@ void OSLShaderRegistry::create_class_descriptors()
 }
 
 
-void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info)
+void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info, int& ctrl_id)
 {
     /*supports following controls
 
@@ -127,10 +128,11 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
     TYPE_INT_COMBOBOX,
     */
 
+    param_info->m_ctrl_res_id = ctrl_id;
     param_info->m_label_res_id = get_res_id();
     //m_label_map.insert(std::make_pair(param_info->m_label_res_id, param_info));
 
-    param_info->m_ctrl_res_id = get_res_id();
+    //param_info->m_ctrl_res_id = get_res_id();
     //m_ctrl_id_map.insert(std::make_pair(reserve_res_id, param_info));
 
     switch (param_info->m_param_type)
@@ -142,7 +144,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_FLOAT,                 // Parameter Type. It will be a float parameter
             P_ANIMATABLE,               // A constant defined in iparamb2.h. Indicates that the parameter is animatable
             param_info->m_label_res_id,  // string table id, e.g. IDS_BASE_COLOR
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), 10.0f,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, ctrl_id++, ctrl_id++, 10.0f,
             p_end                       // End of the second parameter definition. 'end' is an enumerated value defined in
         );
         break;
@@ -153,7 +155,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_INT,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_INT, get_res_id(), get_res_id(), 10,
+            p_ui, TYPE_SPINNER, EDITTYPE_INT, ctrl_id++, ctrl_id++, 10,
             p_end
         );
         break;
@@ -164,7 +166,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_RGBA,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, get_res_id(),
+            p_ui, TYPE_COLORSWATCH, ctrl_id++,
             p_end
         );
         break;
@@ -175,7 +177,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_RGBA,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_COLORSWATCH, get_res_id(),
+            p_ui, TYPE_COLORSWATCH, ctrl_id++,
             p_end
         );
         break;
@@ -186,7 +188,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_TEXMAP,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_TEXMAPBUTTON, get_res_id(),
+            p_ui, TYPE_TEXMAPBUTTON, ctrl_id++,
             p_end
         );
         break;
@@ -197,7 +199,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_POINT3,
             P_ANIMATABLE,
             param_info->m_label_res_id,
-            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), get_res_id(), 10.0f,
+            p_ui, TYPE_SPINNER, EDITTYPE_FLOAT, ctrl_id++, ctrl_id++, ctrl_id++, ctrl_id++, ctrl_id++, ctrl_id++, 10.0f,
             p_end
         );
         break;
@@ -208,7 +210,7 @@ void OSLShaderRegistry::add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::Para
             TYPE_STRING,
             0,
             param_info->m_label_res_id,
-            p_ui, TYPE_EDITBOX, get_res_id(),
+            p_ui, TYPE_EDITBOX, ctrl_id++,
             p_end
         );
         break;

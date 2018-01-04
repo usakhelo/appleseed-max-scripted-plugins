@@ -46,7 +46,7 @@ class OSLShaderRegistry
     ClassDesc2* get_class_descriptor(int index);
     int get_size();
     void create_class_descriptors();
-    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info);
+    void add_parameter(ParamBlockDesc2* pb_desc, ShaderInfo::ParamInfo* param_info, int& ctrl_id);
 
   private:
     std::vector<ShaderInfo*> m_shaders;

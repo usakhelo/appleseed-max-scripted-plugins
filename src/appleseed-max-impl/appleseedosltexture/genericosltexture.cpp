@@ -34,37 +34,6 @@ namespace
 
 namespace
 {
-    class OSLTextureDlgProc : public ParamMap2UserDlgProc {
-      public:
-        INT_PTR DlgProc(TimeValue t, IParamMap2* map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-        {
-            IParamBlock2* pblock = map->GetParamBlock();
-            int id = LOWORD(wParam);
-            switch (msg)
-            {
-              case WM_INITDIALOG:
-              {
-                  ISpinnerControl* spin = (ISpinnerControl *)GetISpinner(GetDlgItem(hWnd, 105));
-                  if (spin != nullptr)
-                  {
-                      spin = SetupFloatSpinner(hWnd, 105, 106, 0.0f, 100.0f, 0.0f);
-                      //spin->SetValue(100, FALSE);
-                      ReleaseISpinner(spin);
-                  }
-              }
-                break;
-              case WM_DESTROY:
-                break;
-              case WM_COMMAND:
-                break;
-            }
-            return FALSE;
-        }
-        void DeleteThis() { /*delete this;*/ }
-    };
-
-    OSLTextureDlgProc dlg_proc;
-
     class OSLTextureParamDlg : public ParamDlg 
     {
       public:
@@ -116,46 +85,16 @@ namespace
             {
             case ShaderInfo::ParamType::Float:
             {
-                dialog_template.AddStatic((LPCSTR)"Float:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
-                dialog_template.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, m_y_pos, 35, 10, param_info->m_ctrl_res_id + 1);
-                dialog_template.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, m_y_pos, 7, 10, param_info->m_ctrl_res_id + 2);
+                dialog_template.AddStatic((LPCSTR)"Float:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, 9000);
+                dialog_template.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, m_y_pos, 35, 10, param_info->m_ctrl_res_id);
+                dialog_template.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, m_y_pos, 7, 10, param_info->m_ctrl_res_id + 1);
             }
             break;
             case ShaderInfo::ParamType::Int:
                 break;
             case ShaderInfo::ParamType::Color:
-                dialog_template.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, param_info->m_ctrl_res_id);
-                dialog_template.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, m_y_pos, 30, 10, param_info->m_ctrl_res_id + 1);
-                break;
-            case ShaderInfo::ParamType::ColorAlpha:
-                break;
-            case ShaderInfo::ParamType::TextureColor:
-                break;
-            case ShaderInfo::ParamType::Point:
-                break;
-            case ShaderInfo::ParamType::String:
-                break;
-            default:
-                DbgAssert(false);
-                break;
-            }
-
-            m_y_pos += 12;
-        }
-
-        void setup_ui_parameter(HWND hwnd, ShaderInfo::ParamInfo* param_info)
-        {
-            switch (param_info->m_param_type)
-            {
-            case ShaderInfo::ParamType::Float:
-            {
-                ISpinnerControl* spin = SetupFloatSpinner(hwnd, param_info->m_ctrl_res_id + 1, param_info->m_ctrl_res_id + 2, 0.0f, 1000.0f, 0.0f);
-                ReleaseISpinner(spin);
-            }
-                break;
-            case ShaderInfo::ParamType::Int:
-                break;
-            case ShaderInfo::ParamType::Color:
+                dialog_template.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, m_y_pos, 48, 8, 9000);
+                dialog_template.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, m_y_pos, 30, 10, param_info->m_ctrl_res_id);
                 break;
             case ShaderInfo::ParamType::ColorAlpha:
                 break;
@@ -177,19 +116,11 @@ namespace
         {
             DialogTemplate dialogTemplate((LPCSTR)"OSL Texture", DS_SETFONT | WS_CHILD | WS_VISIBLE, 0, 0, 217, 80, (LPCSTR)"MS Sans Serif", 8);
             
-            //dialogTemplate.AddStatic((LPCSTR)"Color:", WS_VISIBLE, NULL, 7, 6, 48, 8, 8001);
-            //dialogTemplate.AddComponent((LPCSTR)"ColorSwatch", (LPCSTR)"Color Swatch", WS_VISIBLE, NULL, 85, 5, 30, 10, 8002);
-            //dialogTemplate.AddComponent((LPCSTR)"CustEdit", (LPCSTR)"Parameter Edit", WS_VISIBLE, NULL, 85, 20, 35, 10, 8005);
-            //dialogTemplate.AddComponent((LPCSTR)"SpinnerControl", (LPCSTR)"Parameter Spinner", WS_VISIBLE, NULL, 121, 20, 7, 10, 8006);
             for (auto param_info : m_shader_info->m_params)
             {
                 add_ui_parameter(dialogTemplate, param_info);
             }
             m_pmap = CreateMParamMap2(m_texture->m_pblock, m_imp, g_module, m_hmedit, nullptr, nullptr, (DLGTEMPLATE*)dialogTemplate, L"Header Title", 0);
-            //for (auto param_info : m_shader_info->m_params)
-            //{
-            //    setup_ui_parameter(m_pmap->GetHWnd(), param_info);
-            //}
         }
 
         int                 m_y_pos;
@@ -408,41 +339,9 @@ Interval GenericOSLTexture::Validity(TimeValue t)
     return valid;
 }
 
-namespace
-{
-    class EnvMapParamMapDlgProc
-        : public ParamMap2UserDlgProc
-    {
-    public:
-        virtual void DeleteThis() override
-        {
-            delete this;
-        }
-
-        virtual INT_PTR DlgProc(
-            TimeValue   t,
-            IParamMap2* map,
-            HWND        hwnd,
-            UINT        umsg,
-            WPARAM      wparam,
-            LPARAM      lparam) override
-        {
-            switch (umsg)
-            {
-            case WM_INITDIALOG:
-                return TRUE;
-
-            default:
-                return FALSE;
-            }
-        }
-    };
-}
-
 ParamDlg* GenericOSLTexture::CreateParamDlg(HWND hwMtlEdit, IMtlParams* imp)
 {
     ParamDlg* master_dlg = new OSLTextureParamDlg(hwMtlEdit, imp, this, static_cast<GenericOSLTextureClassDesc*>(m_class_desc)->m_shader_info);
-    //m_class_desc->GetParamBlockDesc(0)->SetUserDlgProc(new EnvMapParamMapDlgProc());
     return master_dlg;
 }
 
